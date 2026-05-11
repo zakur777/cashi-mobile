@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     fontSize: 16,
     color: colors.textPrimary,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
   },
   inputError: { borderColor: colors.danger },
   error: { color: colors.danger, marginTop: 6, marginBottom: 10 },

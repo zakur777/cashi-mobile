@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.sm,
     marginBottom: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
   },
   name: { fontSize: 16, fontWeight: '600', marginBottom: 10, color: colors.textPrimary },
   actionsRow: { flexDirection: 'row', gap: 8 },

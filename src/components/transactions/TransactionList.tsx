@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.sm,
     marginBottom: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
   },
   mainRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   amount: { fontSize: 24, fontWeight: '700', color: colors.textPrimary },

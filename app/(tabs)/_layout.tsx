@@ -8,7 +8,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.primary },
         headerTintColor: colors.textOnPrimary,
-        tabBarStyle: { backgroundColor: '#FFFFFF' },
+        tabBarStyle: { backgroundColor: colors.surfaceCard },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.secondary,
       }}

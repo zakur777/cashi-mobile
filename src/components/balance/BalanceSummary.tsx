@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surfaceCard,
     borderColor: colors.border,
     borderWidth: 1,
     borderRadius: radius.md,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   incomeAmount: {
-    color: colors.secondary,
+    color: colors.success,
     fontWeight: '700',
     fontSize: 18,
   },
