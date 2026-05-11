@@ -13,6 +13,10 @@ export const transactionSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  username: z.string().trim().min(1, 'El usuario es obligatorio'),
+  email: z
+    .string()
+    .trim()
+    .min(1, 'El email es obligatorio')
+    .email('El email no es válido'),
   password: z.string().trim().min(1, 'La contraseña es obligatoria'),
 });
