@@ -1,0 +1,13 @@
+# Operational/internal sources (do not commit)
+requerimientos.md
+clase-2.md
+.atl/
+docs/
+
+# Expo / React Native
+node_modules/
+.expo/
+dist/
+web-build/
+npm-debug.*
+*.log
