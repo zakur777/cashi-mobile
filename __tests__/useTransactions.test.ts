@@ -102,4 +102,40 @@ describe('useTransactions', () => {
 
     expect(result.current.transactionsWithCategory[0].categoryName).toBe('Sin categoría');
   });
+
+  it('computes balance summary from income and expense transactions', async () => {
+    mockedTransactionsStorage.getAll.mockResolvedValueOnce([
+      {
+        id: 'tx-11',
+        amount: 2000,
+        type: 'income',
+        description: 'Sueldo',
+        date: '2026-05-01',
+        categoryId: 'cat-1',
+      },
+      {
+        id: 'tx-12',
+        amount: 350,
+        type: 'expense',
+        description: 'Super',
+        date: '2026-05-03',
+        categoryId: 'cat-2',
+      },
+      {
+        id: 'tx-13',
+        amount: 150,
+        type: 'expense',
+        description: 'Taxi',
+        date: '2026-05-04',
+        categoryId: 'cat-2',
+      },
+    ]);
+
+    const { result } = renderHook(() => useTransactions({ categories }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.totalIncome).toBe(2000);
+    expect(result.current.totalExpense).toBe(500);
+    expect(result.current.balance).toBe(1500);
+  });
 });

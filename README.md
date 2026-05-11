@@ -1,22 +1,31 @@
 # cashi-mobile
 
-Scaffold inicial de Cashi Mobile con **Expo + TypeScript + Expo Router**.
+App mobile de finanzas personales construida con **Expo + TypeScript + Expo Router**.
 
-## Requisitos
+## Instalación
 
-- Node.js 20+
-- npm 10+
+```bash
+npm install
+```
 
-## Comandos base
+## Ejecutar la app
 
-- `npm install`
-- `npm start`
-- `npm test`
+```bash
+npm start
+```
 
-## Stack de Unit 1
+## Ejecutar tests
 
-- React Native + Expo
-- Expo Router (file-based routing)
-- AsyncStorage
-- Zod
-- Jest + jest-expo
+```bash
+npm test
+```
+
+## Arquitectura mínima
+
+- `app/`: screens render-only
+- `src/hooks`: lógica de negocio (CRUD, validaciones, balance, refresh)
+- `src/storage`: frontera de persistencia (AsyncStorage)
+
+## Nota de IA
+
+Este proyecto fue desarrollado con asistencia de IA bajo flujo SDD/TDD (RED → GREEN → REFACTOR), con revisión y validación humana.

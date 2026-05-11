@@ -73,11 +73,38 @@ export function useTransactions({ categories = [] }: UseTransactionsOptions = {}
     [categories, transactions],
   );
 
+  const { totalIncome, totalExpense, balance } = useMemo(() => {
+    const income = transactions.reduce((acc, transaction) => {
+      if (transaction.type !== 'income') {
+        return acc;
+      }
+
+      return acc + transaction.amount;
+    }, 0);
+
+    const expense = transactions.reduce((acc, transaction) => {
+      if (transaction.type !== 'expense') {
+        return acc;
+      }
+
+      return acc + transaction.amount;
+    }, 0);
+
+    return {
+      totalIncome: income,
+      totalExpense: expense,
+      balance: income - expense,
+    };
+  }, [transactions]);
+
   return {
     transactions,
     transactionsWithCategory,
     loading,
     error,
+    totalIncome,
+    totalExpense,
+    balance,
     refresh,
     createTransaction,
     updateTransaction,
