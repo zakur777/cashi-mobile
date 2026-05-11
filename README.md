@@ -145,15 +145,9 @@ Password: 123456
 
 ## Uso de IA
 
-Se usó asistencia de IA para:
+Durante el desarrollo se usaron herramientas de IA como apoyo para organizar ideas, revisar alternativas de arquitectura, mejorar pruebas y validar la claridad de la documentación.
 
-- planificar el proyecto con flujo SDD;
-- definir la arquitectura hook-first;
-- generar y revisar pruebas con TDD;
-- revisar UX/UI y consistencia visual;
-- apoyar la redacción de documentación.
-
-El aprendizaje principal fue reforzar la separación entre UI, lógica de negocio y persistencia: **AsyncStorage y cálculos no deben vivir en componentes**.
+El aprendizaje principal fue reforzar la separación entre UI, lógica de negocio y persistencia: **las pantallas renderizan, los hooks coordinan la lógica y AsyncStorage queda aislado en la capa de storage**.
 
 ## Estado de entrega
 
