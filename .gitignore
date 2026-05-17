@@ -19,3 +19,6 @@ expo-env.d.ts
 # @end expo-cli
 .pi-lens/
 .pi/settings.json
+
+# Local OpenDesign exports
+Cashi-Mobile-UX-Polish/
