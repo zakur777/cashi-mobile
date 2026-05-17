@@ -1,5 +1,6 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, spacing, touchTarget } from '../../design/tokens';
 import { CATEGORY_COLORS, type CategoryColor, type TransactionType } from '../../domain/types';
 
@@ -38,13 +39,13 @@ export function CategoryForm({
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.previewCard}>
+        <GradientSurface style={styles.previewCard} colors={['#281C59', '#151621', '#070811']}>
           <View style={[styles.previewIcon, { backgroundColor: color }]} />
           <View>
             <Text style={styles.kicker}>Categoría</Text>
             <Text style={styles.title}>{title}</Text>
           </View>
-        </View>
+        </GradientSurface>
 
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Nombre</Text>
@@ -95,8 +96,10 @@ export function CategoryForm({
           <Text style={styles.helpText}>Paleta fija Cashi para reconocer ingresos y egresos al vuelo.</Text>
         </View>
 
-        <Pressable style={styles.saveButton} onPress={onSave} disabled={loading}>
-          <Text style={styles.saveText}>{loading ? 'Guardando...' : saveLabel}</Text>
+        <Pressable style={styles.saveButtonShell} onPress={onSave} disabled={loading}>
+          <GradientSurface style={styles.saveButton}>
+            <Text style={styles.saveText}>{loading ? 'Guardando...' : saveLabel}</Text>
+          </GradientSurface>
         </Pressable>
 
         {onDelete ? (
@@ -115,8 +118,7 @@ const styles = StyleSheet.create({
   previewCard: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceCard,
+    borderColor: colors.borderStrong,
     padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
@@ -168,9 +170,8 @@ const styles = StyleSheet.create({
   },
   colorSwatchActive: { borderColor: colors.lime, transform: [{ scale: 1.08 }] },
   helpText: { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
+  saveButtonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   saveButton: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.secondary,
     borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',

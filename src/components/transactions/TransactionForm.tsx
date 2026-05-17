@@ -1,5 +1,6 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, spacing, touchTarget } from '../../design/tokens';
 import type { Category, TransactionType } from '../../domain/types';
 
@@ -56,11 +57,11 @@ export function TransactionForm(props: TransactionFormProps) {
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.heroCard}>
+        <GradientSurface style={styles.heroCard} colors={['#281C59', '#151621', '#070811']}>
           <Text style={styles.kicker}>Movimiento</Text>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.heroHelp}>Registrá ingresos y egresos en pesos chilenos.</Text>
-        </View>
+        </GradientSurface>
 
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Monto</Text>
@@ -143,8 +144,10 @@ export function TransactionForm(props: TransactionFormProps) {
           {errors.categoryId ? <Text style={styles.error}>{errors.categoryId}</Text> : null}
         </View>
 
-        <Pressable style={styles.saveButton} onPress={onSave} disabled={loading}>
-          <Text style={styles.saveText}>{loading ? 'Guardando...' : saveLabel}</Text>
+        <Pressable style={styles.saveButtonShell} onPress={onSave} disabled={loading}>
+          <GradientSurface style={styles.saveButton}>
+            <Text style={styles.saveText}>{loading ? 'Guardando...' : saveLabel}</Text>
+          </GradientSurface>
         </Pressable>
 
         {onDelete ? (
@@ -163,8 +166,7 @@ const styles = StyleSheet.create({
   heroCard: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceCard,
+    borderColor: colors.borderStrong,
     padding: spacing.md,
     gap: spacing.xs,
   },
@@ -212,9 +214,8 @@ const styles = StyleSheet.create({
   categoryChipActive: { backgroundColor: colors.surfaceSoft, borderWidth: 2 },
   categoryDot: { width: 10, height: 10, borderRadius: 5 },
   categoryChipText: { color: colors.textPrimary, fontWeight: '800' },
+  saveButtonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   saveButton: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.secondary,
     borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',

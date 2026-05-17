@@ -1,5 +1,6 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, spacing } from '../../design/tokens';
 import { formatCLP, formatSignedCLP } from '../../domain/money';
 import type { TransactionType } from '../../domain/types';
@@ -44,7 +45,7 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
       </View>
 
       {transactions.length > 0 ? (
-        <View style={styles.periodCard}>
+        <GradientSurface style={styles.periodCard} colors={['#281C59', '#151621', '#070811']}>
           <View style={styles.periodHeader}>
             <Text style={styles.periodLabel}>Resultado del período</Text>
             <Text style={styles.periodAmount}>
@@ -54,7 +55,7 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
           <Text style={styles.periodMeta}>
             {transactions.length} movimientos locales · ingresos {formatCLP(totalIncome)} · egresos {formatCLP(totalExpense)}
           </Text>
-        </View>
+        </GradientSurface>
       ) : null}
 
       <FlatList
@@ -102,11 +103,10 @@ const styles = StyleSheet.create({
   iconButtonText: { color: colors.textPrimary, fontSize: 28, lineHeight: 30 },
   periodCard: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderStrong,
     borderRadius: radius.md,
     padding: spacing.md,
     marginBottom: spacing.md,
-    backgroundColor: colors.surfaceCard,
   },
   periodHeader: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
   periodLabel: { color: colors.textSecondary, fontSize: 12, fontWeight: '800', textTransform: 'uppercase' },

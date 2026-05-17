@@ -1,5 +1,6 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, spacing, touchTarget } from '../../design/tokens';
 import { formatSignedCLP } from '../../domain/money';
 import type { Category, Transaction } from '../../domain/types';
@@ -30,19 +31,21 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
           <Text style={styles.kicker}>Organización</Text>
           <Text style={styles.title}>Categorías</Text>
         </View>
-        <Pressable style={styles.createButton} onPress={onCreate}>
-          <Text style={styles.createButtonText}>Nueva categoría</Text>
+        <Pressable style={styles.createButtonShell} onPress={onCreate}>
+          <GradientSurface style={styles.createButton}>
+            <Text style={styles.createButtonText}>Nueva categoría</Text>
+          </GradientSurface>
         </Pressable>
       </View>
 
       {categories.length > 0 ? (
-        <View style={styles.summaryCard}>
+        <GradientSurface style={styles.summaryCard} colors={['#281C59', '#151621', '#070811']}>
           <Text style={styles.summaryLabel}>Paleta Cashi activa</Text>
           <Text style={styles.summaryText}>
             {categories.length} categorías · {incomeCount} ingreso{incomeCount === 1 ? '' : 's'} · {expenseCount} egreso
             {expenseCount === 1 ? '' : 's'}
           </Text>
-        </View>
+        </GradientSurface>
       ) : null}
 
       <FlatList
@@ -82,8 +85,8 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
   title: { color: colors.textPrimary, fontSize: 30, fontWeight: '800' },
+  createButtonShell: { borderRadius: radius.pill, overflow: 'hidden' },
   createButton: {
-    backgroundColor: colors.secondary,
     borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     paddingHorizontal: spacing.md,
@@ -93,8 +96,7 @@ const styles = StyleSheet.create({
   summaryCard: {
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceCard,
+    borderColor: colors.borderStrong,
     padding: spacing.md,
     marginBottom: spacing.md,
   },

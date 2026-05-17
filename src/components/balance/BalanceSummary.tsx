@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, spacing } from '../../design/tokens';
 import { formatCLP } from '../../domain/money';
 
@@ -22,7 +23,7 @@ export function BalanceSummary({ totalIncome, totalExpense, balance, primaryExpe
 
   return (
     <View style={styles.container}>
-      <View style={styles.heroCard}>
+      <GradientSurface style={styles.heroCard} colors={['#281C59', '#151621', '#070811']}>
         <View style={styles.heroTopRow}>
           <Text style={styles.heroKicker}>Balance actual</Text>
           <View style={styles.statusPill}>
@@ -31,7 +32,7 @@ export function BalanceSummary({ totalIncome, totalExpense, balance, primaryExpe
         </View>
         <Text style={styles.mainAmount}>{formatCLP(balance)}</Text>
         <Text style={styles.heroHelp}>Resumen local de ingresos, egresos y categoría de mayor gasto.</Text>
-      </View>
+      </GradientSurface>
 
       <View style={styles.row}>
         <View style={styles.metricCard}>
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   heroCard: {
-    backgroundColor: colors.surfaceStrong,
     borderColor: colors.borderStrong,
     borderWidth: 1,
     borderRadius: radius.lg,

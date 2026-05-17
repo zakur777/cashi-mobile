@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 
+import { GradientSurface } from '../src/components/ui/GradientSurface';
 import { colors, radius, spacing, touchTarget } from '../src/design/tokens';
 import { useLoginForm } from '../src/hooks/useLoginForm';
 
@@ -25,9 +26,9 @@ export default function LoginScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.topbar}>
-            <View style={styles.brandMark}>
+            <GradientSurface style={styles.brandMark}>
               <Text style={styles.brandMarkText}>C</Text>
-            </View>
+            </GradientSurface>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>Demo offline</Text>
             </View>
@@ -39,11 +40,14 @@ export default function LoginScreen() {
             Acceso local, claro y seguro para revisar balance, categorías y movimientos de la demo.
           </Text>
 
-          <View style={styles.heroArt}>
+          <GradientSurface style={styles.heroArt} colors={['#281C59', '#111225', '#070811']}>
+            <View style={styles.glowTopLeft} />
+            <View style={styles.glowBottomRight} />
             <View style={styles.orbit}>
-              <View style={styles.planet} />
+              <GradientSurface style={styles.planet} />
+              <View style={styles.moon} />
             </View>
-          </View>
+          </GradientSurface>
 
           <View style={styles.formStack}>
             <View style={styles.fieldContainer}>
@@ -78,12 +82,14 @@ export default function LoginScreen() {
             {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
 
             <Pressable
-              style={styles.button}
+              style={styles.buttonShell}
               onPress={() => {
                 void handleSubmit();
               }}
             >
-              <Text style={styles.buttonText}>Ingresar</Text>
+              <GradientSurface style={styles.button}>
+                <Text style={styles.buttonText}>Ingresar</Text>
+              </GradientSurface>
             </Pressable>
           </View>
 
@@ -105,7 +111,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.secondary,
   },
   brandMarkText: { color: colors.textOnAccent, fontSize: 20, fontWeight: '800' },
   badge: {
@@ -126,9 +131,29 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.surfaceStrong,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  glowTopLeft: {
+    position: 'absolute',
+    left: 20,
+    top: 16,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: colors.lime,
+    opacity: 0.16,
+  },
+  glowBottomRight: {
+    position: 'absolute',
+    right: 10,
+    bottom: 4,
+    width: 142,
+    height: 142,
+    borderRadius: 71,
+    backgroundColor: colors.secondary,
+    opacity: 0.26,
   },
   orbit: {
     width: 90,
@@ -139,7 +164,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  planet: { width: 54, height: 54, borderRadius: 27, backgroundColor: colors.secondary },
+  planet: { width: 54, height: 54, borderRadius: 27 },
+  moon: { position: 'absolute', right: 8, top: 16, width: 14, height: 14, borderRadius: 7, backgroundColor: colors.lime },
   formStack: { gap: spacing.sm },
   fieldContainer: { gap: spacing.xs },
   label: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
@@ -153,14 +179,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceSoft,
   },
   errorText: { color: colors.danger, fontSize: 13 },
+  buttonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   button: {
-    backgroundColor: colors.secondary,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: spacing.sm,
   },
   buttonText: { color: colors.textOnAccent, fontSize: 16, fontWeight: '800' },
   footerNote: { color: colors.textMuted, fontSize: 12, textAlign: 'center', lineHeight: 18, marginTop: spacing.md },
