@@ -1,7 +1,7 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, touchTarget } from '../../design/tokens';
+import { colors, radius, spacing, touchTarget, typography } from '../../design/tokens';
 import { formatSignedCLP } from '../../domain/money';
 import type { Category, Transaction } from '../../domain/types';
 
@@ -83,8 +83,15 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: colors.surface },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { color: colors.textPrimary, fontSize: 30, fontWeight: '800' },
+  kicker: {
+    color: colors.lime,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  title: { color: colors.textPrimary, fontFamily: typography.display, fontSize: 30, fontWeight: '800' },
   createButtonShell: { borderRadius: radius.pill, overflow: 'hidden' },
   createButton: {
     borderRadius: radius.pill,
@@ -92,7 +99,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     justifyContent: 'center',
   },
-  createButtonText: { color: colors.textOnAccent, fontWeight: '800', textAlign: 'center' },
+  createButtonText: { color: colors.textOnAccent, fontFamily: typography.bodyBold, fontWeight: '800', textAlign: 'center' },
   summaryCard: {
     borderRadius: radius.md,
     borderWidth: 1,
@@ -100,8 +107,14 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.md,
   },
-  summaryLabel: { color: colors.textSecondary, fontSize: 12, fontWeight: '800', textTransform: 'uppercase' },
-  summaryText: { color: colors.textPrimary, fontSize: 15, fontWeight: '700', marginTop: spacing.xs },
+  summaryLabel: {
+    color: colors.textSecondary,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  summaryText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 15, fontWeight: '700', marginTop: spacing.xs },
   listContainer: { paddingBottom: spacing.xl },
   emptyContainer: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   emptyText: { color: colors.textSecondary, fontSize: 16 },
@@ -130,8 +143,8 @@ const styles = StyleSheet.create({
   },
   incomeType: { color: colors.textOnAccent, backgroundColor: colors.success },
   expenseType: { color: colors.danger, backgroundColor: colors.dangerSoft },
-  name: { fontSize: 17, fontWeight: '800', color: colors.textPrimary },
-  meta: { color: colors.textSecondary, fontSize: 12 },
+  name: { fontFamily: typography.bodyBold, fontSize: 17, fontWeight: '800', color: colors.textPrimary },
+  meta: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 12 },
   actionsColumn: { gap: spacing.xs, alignItems: 'flex-end' },
   editText: { color: colors.lime, fontWeight: '800', fontSize: 12 },
   deleteText: { color: colors.danger, fontWeight: '800', fontSize: 12 },

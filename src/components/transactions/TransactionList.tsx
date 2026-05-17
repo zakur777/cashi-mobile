@@ -1,7 +1,7 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing } from '../../design/tokens';
+import { colors, radius, spacing, typography } from '../../design/tokens';
 import { formatCLP, formatSignedCLP } from '../../domain/money';
 import type { TransactionType } from '../../domain/types';
 
@@ -88,8 +88,15 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
 const styles = StyleSheet.create({
   container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: colors.surface },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
-  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { color: colors.textPrimary, fontSize: 30, fontWeight: '800' },
+  kicker: {
+    color: colors.lime,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  title: { color: colors.textPrimary, fontFamily: typography.display, fontSize: 30, fontWeight: '800' },
   iconButton: {
     width: 48,
     height: 48,
@@ -109,9 +116,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   periodHeader: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
-  periodLabel: { color: colors.textSecondary, fontSize: 12, fontWeight: '800', textTransform: 'uppercase' },
-  periodAmount: { color: colors.success, fontSize: 18, fontWeight: '800' },
-  periodMeta: { color: colors.textSecondary, fontSize: 13, marginTop: spacing.xs, lineHeight: 18 },
+  periodLabel: {
+    color: colors.textSecondary,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  periodAmount: { color: colors.success, fontFamily: typography.bodyBold, fontSize: 18, fontWeight: '800' },
+  periodMeta: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 13, marginTop: spacing.xs, lineHeight: 18 },
   listContainer: { paddingBottom: spacing.xl },
   emptyContainer: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   emptyText: { color: colors.textSecondary, fontSize: 16 },
@@ -129,10 +142,10 @@ const styles = StyleSheet.create({
   },
   iconBadge: { width: 46, height: 46, borderRadius: radius.sm, opacity: 0.45 },
   cardContent: { flex: 1 },
-  description: { fontSize: 15, fontWeight: '800', color: colors.textPrimary },
-  meta: { marginTop: 4, color: colors.textSecondary, fontSize: 12 },
+  description: { fontFamily: typography.bodyBold, fontSize: 15, fontWeight: '800', color: colors.textPrimary },
+  meta: { marginTop: 4, color: colors.textSecondary, fontFamily: typography.body, fontSize: 12 },
   amountColumn: { alignItems: 'flex-end', gap: 6 },
-  amount: { fontSize: 16, fontWeight: '800' },
+  amount: { fontFamily: typography.bodyBold, fontSize: 16, fontWeight: '800' },
   incomeAmount: { color: colors.success },
   expenseAmount: { color: colors.textPrimary },
   deleteText: { color: colors.danger, fontSize: 11, fontWeight: '700' },

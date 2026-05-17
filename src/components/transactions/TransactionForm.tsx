@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, touchTarget } from '../../design/tokens';
+import { colors, radius, spacing, touchTarget, typography } from '../../design/tokens';
 import type { Category, TransactionType } from '../../domain/types';
 
 interface TransactionFormProps {
@@ -170,11 +170,18 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
   },
-  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { fontSize: 24, fontWeight: '800', color: colors.textPrimary },
-  heroHelp: { color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
+  kicker: {
+    color: colors.lime,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  title: { fontFamily: typography.display, fontSize: 24, fontWeight: '800', color: colors.textPrimary },
+  heroHelp: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 13, lineHeight: 18 },
   fieldGroup: { gap: spacing.xs },
-  label: { fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
+  label: { fontFamily: typography.bodyBold, fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
   input: {
     minHeight: 52,
     borderWidth: 1,
@@ -183,6 +190,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     fontSize: 16,
     color: colors.textPrimary,
+    fontFamily: typography.body,
     backgroundColor: colors.surfaceSoft,
   },
   inputError: { borderColor: colors.danger },
@@ -196,7 +204,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   typeButtonActive: { backgroundColor: colors.secondary },
-  typeButtonText: { fontWeight: '800', color: colors.textSecondary },
+  typeButtonText: { fontFamily: typography.bodyBold, fontWeight: '800', color: colors.textSecondary },
   typeButtonTextActive: { color: colors.textOnAccent },
   categoriesWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
   categoryChip: {
@@ -213,14 +221,14 @@ const styles = StyleSheet.create({
   },
   categoryChipActive: { backgroundColor: colors.surfaceSoft, borderWidth: 2 },
   categoryDot: { width: 10, height: 10, borderRadius: 5 },
-  categoryChipText: { color: colors.textPrimary, fontWeight: '800' },
+  categoryChipText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontWeight: '800' },
   saveButtonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   saveButton: {
     borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
   },
-  saveText: { color: colors.textOnAccent, textAlign: 'center', fontWeight: '800' },
+  saveText: { color: colors.textOnAccent, fontFamily: typography.bodyBold, textAlign: 'center', fontWeight: '800' },
   deleteButton: {
     backgroundColor: colors.dangerSoft,
     borderWidth: 1,
@@ -229,5 +237,5 @@ const styles = StyleSheet.create({
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
   },
-  deleteText: { color: colors.danger, textAlign: 'center', fontWeight: '800' },
+  deleteText: { color: colors.danger, fontFamily: typography.bodyBold, textAlign: 'center', fontWeight: '800' },
 });

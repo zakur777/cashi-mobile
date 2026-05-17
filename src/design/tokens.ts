@@ -26,6 +26,13 @@ export const gradients = {
   cardEnd: '#151621',
 } as const;
 
+export const typography = {
+  body: 'Inter_400Regular',
+  bodyMedium: 'Inter_500Medium',
+  bodyBold: 'Inter_700Bold',
+  display: 'Inter_800ExtraBold',
+} as const;
+
 export const spacing = {
   xs: 8,
   sm: 12,

@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 
-import { colors, radius } from '../../src/design/tokens';
+import { colors, radius, typography } from '../../src/design/tokens';
 
 export default function TabsLayout() {
   return (
@@ -8,7 +8,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.surface },
         headerTintColor: colors.textPrimary,
-        headerTitleStyle: { fontWeight: '800' },
+        headerTitleStyle: { fontFamily: typography.display, fontWeight: '800' },
         tabBarStyle: {
           position: 'absolute',
           left: 14,

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import { GradientSurface } from '../src/components/ui/GradientSurface';
-import { colors, radius, spacing, touchTarget } from '../src/design/tokens';
+import { colors, radius, spacing, touchTarget, typography } from '../src/design/tokens';
 import { useLoginForm } from '../src/hooks/useLoginForm';
 
 export default function LoginScreen() {
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  brandMarkText: { color: colors.textOnAccent, fontSize: 20, fontWeight: '800' },
+  brandMarkText: { color: colors.textOnAccent, fontFamily: typography.display, fontSize: 20, fontWeight: '800' },
   badge: {
     minHeight: 36,
     paddingHorizontal: spacing.md,
@@ -122,10 +122,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.surfaceSoft,
   },
-  badgeText: { color: colors.lime, fontWeight: '700', fontSize: 12 },
-  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' },
-  heroTitle: { fontSize: 32, lineHeight: 34, fontWeight: '800', color: colors.textPrimary },
-  heroSubtitle: { fontSize: 15, lineHeight: 22, color: colors.textSecondary },
+  badgeText: { color: colors.lime, fontFamily: typography.bodyBold, fontWeight: '700', fontSize: 12 },
+  kicker: {
+    color: colors.lime,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  heroTitle: { fontFamily: typography.display, fontSize: 32, lineHeight: 34, fontWeight: '800', color: colors.textPrimary },
+  heroSubtitle: { fontFamily: typography.body, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
   heroArt: {
     height: 188,
     borderRadius: radius.lg,
@@ -168,7 +175,7 @@ const styles = StyleSheet.create({
   moon: { position: 'absolute', right: 8, top: 16, width: 14, height: 14, borderRadius: 7, backgroundColor: colors.lime },
   formStack: { gap: spacing.sm },
   fieldContainer: { gap: spacing.xs },
-  label: { color: colors.textSecondary, fontSize: 13, fontWeight: '700' },
+  label: { color: colors.textSecondary, fontFamily: typography.bodyBold, fontSize: 13, fontWeight: '700' },
   input: {
     minHeight: 52,
     borderRadius: radius.sm,
@@ -176,9 +183,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     paddingHorizontal: spacing.md,
     color: colors.textPrimary,
+    fontFamily: typography.body,
     backgroundColor: colors.surfaceSoft,
   },
-  errorText: { color: colors.danger, fontSize: 13 },
+  errorText: { color: colors.danger, fontFamily: typography.body, fontSize: 13 },
   buttonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   button: {
     paddingHorizontal: spacing.lg,
@@ -187,6 +195,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonText: { color: colors.textOnAccent, fontSize: 16, fontWeight: '800' },
-  footerNote: { color: colors.textMuted, fontSize: 12, textAlign: 'center', lineHeight: 18, marginTop: spacing.md },
+  buttonText: { color: colors.textOnAccent, fontFamily: typography.bodyBold, fontSize: 16, fontWeight: '800' },
+  footerNote: {
+    color: colors.textMuted,
+    fontFamily: typography.body,
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+    marginTop: spacing.md,
+  },
 });

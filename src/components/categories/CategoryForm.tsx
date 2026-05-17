@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, touchTarget } from '../../design/tokens';
+import { colors, radius, spacing, touchTarget, typography } from '../../design/tokens';
 import { CATEGORY_COLORS, type CategoryColor, type TransactionType } from '../../domain/types';
 
 interface CategoryFormProps {
@@ -125,10 +125,17 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   previewIcon: { width: 56, height: 56, borderRadius: radius.md, opacity: 0.85 },
-  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { fontSize: 24, fontWeight: '800', color: colors.textPrimary },
+  kicker: {
+    color: colors.lime,
+    fontFamily: typography.bodyBold,
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  title: { fontFamily: typography.display, fontSize: 24, fontWeight: '800', color: colors.textPrimary },
   fieldGroup: { gap: spacing.xs },
-  label: { fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
+  label: { fontFamily: typography.bodyBold, fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
   input: {
     minHeight: 52,
     borderWidth: 1,
@@ -137,6 +144,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     fontSize: 16,
     color: colors.textPrimary,
+    fontFamily: typography.body,
     backgroundColor: colors.surfaceSoft,
   },
   inputError: { borderColor: colors.danger },
@@ -158,7 +166,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   segmentButtonActive: { backgroundColor: colors.secondary },
-  segmentText: { color: colors.textSecondary, fontWeight: '800' },
+  segmentText: { color: colors.textSecondary, fontFamily: typography.bodyBold, fontWeight: '800' },
   segmentTextActive: { color: colors.textOnAccent },
   paletteRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
   colorSwatch: {
@@ -169,14 +177,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   colorSwatchActive: { borderColor: colors.lime, transform: [{ scale: 1.08 }] },
-  helpText: { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
+  helpText: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 12, lineHeight: 18 },
   saveButtonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   saveButton: {
     borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
   },
-  saveText: { color: colors.textOnAccent, textAlign: 'center', fontWeight: '800' },
+  saveText: { color: colors.textOnAccent, fontFamily: typography.bodyBold, textAlign: 'center', fontWeight: '800' },
   deleteButton: {
     backgroundColor: colors.dangerSoft,
     borderWidth: 1,
@@ -185,5 +193,5 @@ const styles = StyleSheet.create({
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
   },
-  deleteText: { color: colors.danger, textAlign: 'center', fontWeight: '800' },
+  deleteText: { color: colors.danger, fontFamily: typography.bodyBold, textAlign: 'center', fontWeight: '800' },
 });

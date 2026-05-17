@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing } from '../../design/tokens';
+import { colors, radius, spacing, typography } from '../../design/tokens';
 import { formatCLP } from '../../domain/money';
 
 interface PrimaryExpenseCategory {
@@ -86,19 +86,21 @@ const styles = StyleSheet.create({
   heroTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: spacing.sm },
   heroKicker: {
     color: colors.lime,
+    fontFamily: typography.bodyBold,
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   statusPill: { borderRadius: radius.pill, backgroundColor: colors.surfaceSoft, paddingHorizontal: spacing.sm, paddingVertical: 5 },
-  statusText: { color: colors.success, fontSize: 12, fontWeight: '800' },
+  statusText: { color: colors.success, fontFamily: typography.bodyBold, fontSize: 12, fontWeight: '800' },
   mainAmount: {
     color: colors.textPrimary,
+    fontFamily: typography.display,
     fontSize: 36,
     fontWeight: '800',
   },
-  heroHelp: { color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
+  heroHelp: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 13, lineHeight: 18 },
   row: {
     flexDirection: 'row',
     gap: spacing.sm,
@@ -113,6 +115,7 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     color: colors.textSecondary,
+    fontFamily: typography.bodyBold,
     fontSize: 12,
     fontWeight: '800',
     marginBottom: spacing.xs,
@@ -120,11 +123,13 @@ const styles = StyleSheet.create({
   },
   incomeAmount: {
     color: colors.success,
+    fontFamily: typography.bodyBold,
     fontWeight: '800',
     fontSize: 18,
   },
   expenseAmount: {
     color: colors.danger,
+    fontFamily: typography.bodyBold,
     fontWeight: '800',
     fontSize: 18,
   },
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   progressHeader: { flexDirection: 'row', justifyContent: 'space-between' },
-  progressValue: { color: colors.textPrimary, fontWeight: '800' },
+  progressValue: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontWeight: '800' },
   progressTrack: { height: 10, borderRadius: radius.pill, backgroundColor: colors.surfaceSoft, overflow: 'hidden' },
   progressFill: { height: 10, borderRadius: radius.pill, backgroundColor: colors.secondary },
   principalCard: {
@@ -151,6 +156,6 @@ const styles = StyleSheet.create({
   },
   principalIcon: { width: 44, height: 44, borderRadius: radius.sm, opacity: 0.75 },
   principalContent: { flex: 1 },
-  principalName: { color: colors.textPrimary, fontSize: 18, fontWeight: '800' },
-  principalHelp: { color: colors.textSecondary, fontSize: 13 },
+  principalName: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 18, fontWeight: '800' },
+  principalHelp: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 13 },
 });
