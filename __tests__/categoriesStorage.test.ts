@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { Category } from '../src/domain/types';
+import { CATEGORY_COLORS, type Category } from '../src/domain/types';
 import { categoriesStorage } from '../src/storage/categoriesStorage';
 import { STORAGE_KEYS } from '../src/storage/keys';
 
@@ -24,7 +24,7 @@ describe('categoriesStorage', () => {
   });
 
   it('returns parsed categories when payload exists', async () => {
-    const payload: Category[] = [{ id: 'c-1', name: 'Comida' }];
+    const payload: Category[] = [{ id: 'c-1', name: 'Comida', type: 'expense', color: CATEGORY_COLORS.lime }];
     mockedStorage.getItem.mockResolvedValueOnce(JSON.stringify(payload));
 
     await expect(categoriesStorage.getAll()).resolves.toEqual(payload);
@@ -37,7 +37,7 @@ describe('categoriesStorage', () => {
   });
 
   it('saves serialized categories in categories key', async () => {
-    const payload: Category[] = [{ id: 'c-2', name: 'Salud' }];
+    const payload: Category[] = [{ id: 'c-2', name: 'Salud', type: 'expense', color: CATEGORY_COLORS.green }];
 
     await categoriesStorage.saveAll(payload);
 

@@ -31,7 +31,7 @@ describe('TransactionList', () => {
       />,
     );
 
-    expect(screen.getByText('-$540.00')).toBeTruthy();
+    expect(screen.getByText('-$540')).toBeTruthy();
     expect(screen.getByText('Egreso')).toBeTruthy();
     expect(screen.getByText('Categoría: Comida')).toBeTruthy();
     expect(screen.getByText('Supermercado')).toBeTruthy();
@@ -87,7 +87,7 @@ describe('TransactionList', () => {
       />,
     );
 
-    expect(screen.getByText('+$99.00')).toBeTruthy();
+    expect(screen.getByText('+$99')).toBeTruthy();
     expect(screen.getByText('Ingreso')).toBeTruthy();
   });
 });

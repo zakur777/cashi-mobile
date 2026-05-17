@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
+import { CATEGORY_COLORS } from '../src/domain/types';
 import { useCategoryForm } from '../src/hooks/useCategoryForm';
 
 describe('useCategoryForm', () => {
@@ -31,7 +32,35 @@ describe('useCategoryForm', () => {
     });
 
     expect(response).toBe(true);
-    expect(onSubmit).toHaveBeenCalledWith('Comida');
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: 'Comida',
+      type: 'expense',
+      color: CATEGORY_COLORS.lime,
+    });
+    expect(result.current.errors).toEqual({});
+  });
+
+  it('submits selected type and color metadata', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    const { result } = renderHook(() => useCategoryForm({ onSubmit }));
+
+    await act(async () => {
+      result.current.setName('Sueldo');
+      result.current.setType('income');
+      result.current.setColor(CATEGORY_COLORS.green);
+    });
+
+    let response = false;
+    await act(async () => {
+      response = await result.current.handleSubmit();
+    });
+
+    expect(response).toBe(true);
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: 'Sueldo',
+      type: 'income',
+      color: CATEGORY_COLORS.green,
+    });
     expect(result.current.errors).toEqual({});
   });
 });

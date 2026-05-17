@@ -1,3 +1,4 @@
+import { CATEGORY_COLORS } from '../src/domain/types';
 import { categorySchema, transactionSchema } from '../src/domain/schemas';
 
 describe('categorySchema', () => {
@@ -6,8 +7,17 @@ describe('categorySchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts valid name', () => {
+  it('rejects missing category type and color', () => {
     const result = categorySchema.safeParse({ name: 'Comida' });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts valid metadata', () => {
+    const result = categorySchema.safeParse({
+      name: 'Comida',
+      type: 'expense',
+      color: CATEGORY_COLORS.lime,
+    });
     expect(result.success).toBe(true);
   });
 });

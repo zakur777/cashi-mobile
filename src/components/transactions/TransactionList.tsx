@@ -1,6 +1,7 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, spacing, touchTarget } from '../../design/tokens';
+import { formatSignedCLP } from '../../domain/money';
 import type { TransactionType } from '../../domain/types';
 
 interface TransactionItem {
@@ -20,7 +21,6 @@ interface TransactionListProps {
   onDelete: (id: string) => void;
 }
 
-const formatAmount = (amount: number, type: TransactionType) => `${type === 'income' ? '+' : '-'}$${amount.toFixed(2)}`;
 
 export function TransactionList({ transactions, onCreate, onEdit, onDelete }: TransactionListProps) {
   return (
@@ -39,7 +39,7 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
           return (
             <View style={styles.card}>
               <View style={styles.mainRow}>
-                <Text style={styles.amount}>{formatAmount(item.amount, item.type)}</Text>
+                <Text style={styles.amount}>{formatSignedCLP(item.amount, item.type)}</Text>
                 <Text style={[styles.typeBadge, item.type === 'income' ? styles.incomeBadge : styles.expenseBadge]}>
                   {typeLabel}
                 </Text>

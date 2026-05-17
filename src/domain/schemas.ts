@@ -1,7 +1,13 @@
 import * as z from 'zod';
 
+import { CATEGORY_COLORS } from './types';
+
+const categoryColorValues = Object.values(CATEGORY_COLORS) as [string, ...string[]];
+
 export const categorySchema = z.object({
   name: z.string().trim().min(1, 'El nombre es obligatorio'),
+  type: z.enum(['income', 'expense']),
+  color: z.enum(categoryColorValues),
 });
 
 export const transactionSchema = z.object({

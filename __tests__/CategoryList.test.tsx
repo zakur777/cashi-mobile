@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 
 import { CategoryList } from '../src/components/categories/CategoryList';
+import { CATEGORY_COLORS } from '../src/domain/types';
 
 describe('CategoryList', () => {
   it('shows empty state when there are no categories', () => {
@@ -17,7 +18,7 @@ describe('CategoryList', () => {
 
     const screen = render(
       <CategoryList
-        categories={[{ id: 'c-1', name: 'Comida' }]}
+        categories={[{ id: 'c-1', name: 'Comida', type: 'expense', color: CATEGORY_COLORS.lime }]}
         onCreate={jest.fn()}
         onEdit={onEdit}
         onDelete={onDelete}

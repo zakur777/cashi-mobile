@@ -19,8 +19,9 @@ const mockedTransactionsStorage = transactionsStorage as jest.Mocked<typeof tran
 
 describe('useTransactions', () => {
   const categories: Category[] = [
-    { id: 'cat-1', name: 'Salario' },
-    { id: 'cat-2', name: 'Comida' },
+    { id: 'cat-1', name: 'Salario', type: 'income', color: '#85C79A' },
+    { id: 'cat-2', name: 'Comida', type: 'expense', color: '#EDF7BD' },
+    { id: 'cat-3', name: 'Transporte', type: 'expense', color: '#4E8D9C' },
   ];
 
   beforeEach(() => {
@@ -141,5 +142,44 @@ describe('useTransactions', () => {
     expect(result.current.totalIncome).toBe(2000);
     expect(result.current.totalExpense).toBe(500);
     expect(result.current.balance).toBe(1500);
+  });
+
+  it('returns the expense category with the highest spend', async () => {
+    mockedTransactionsStorage.getAll.mockResolvedValueOnce([
+      {
+        id: 'tx-food',
+        amount: 42000,
+        type: 'expense',
+        description: 'Supermercado',
+        date: '2026-05-15',
+        categoryId: 'cat-2',
+      },
+      {
+        id: 'tx-transport',
+        amount: 11500,
+        type: 'expense',
+        description: 'Transporte semanal',
+        date: '2026-05-14',
+        categoryId: 'cat-3',
+      },
+      {
+        id: 'tx-income',
+        amount: 1250000,
+        type: 'income',
+        description: 'Sueldo mensual',
+        date: '2026-05-01',
+        categoryId: 'cat-1',
+      },
+    ]);
+
+    const { result } = renderHook(() => useTransactions({ categories }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.primaryExpenseCategory).toEqual({
+      id: 'cat-2',
+      name: 'Comida',
+      color: '#EDF7BD',
+      amount: 42000,
+    });
   });
 });

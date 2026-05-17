@@ -5,15 +5,18 @@ import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { CategoryList } from '../../src/components/categories/CategoryList';
 import { colors, spacing } from '../../src/design/tokens';
 import { useCategories } from '../../src/hooks/useCategories';
+import { useTransactions } from '../../src/hooks/useTransactions';
 
 export default function CategoriesTab() {
   const router = useRouter();
   const { categories, loading, error, refresh, deleteCategory } = useCategories();
+  const { transactions, refresh: refreshTransactions } = useTransactions({ categories });
 
   useFocusEffect(
     useCallback(() => {
       void refresh();
-    }, [refresh]),
+      void refreshTransactions();
+    }, [refresh, refreshTransactions]),
   );
 
   return (
@@ -24,6 +27,7 @@ export default function CategoriesTab() {
       {!loading ? (
         <CategoryList
           categories={categories}
+          transactions={transactions}
           onCreate={() => router.push('/(tabs)/category/new')}
           onEdit={(id) => router.push(`/(tabs)/category/${id}`)}
           onDelete={(id) => {

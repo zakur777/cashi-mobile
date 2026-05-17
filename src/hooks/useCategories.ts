@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import type { Category } from '../domain/types';
+import { CATEGORY_COLORS, type Category, type CategoryInput } from '../domain/types';
 import { categoriesStorage } from '../storage/categoriesStorage';
 import { seedDemoDataIfEmpty } from '../storage/demoSeed';
 
-const buildCategory = (name: string): Category => ({
+const normalizeCategory = (category: Category): Category => ({
+  ...category,
+  type: category.type ?? 'expense',
+  color: category.color ?? CATEGORY_COLORS.lime,
+});
+
+const buildCategory = (input: CategoryInput): Category => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-  name: name.trim(),
+  ...input,
+  name: input.name.trim(),
 });
 
 export function useCategories() {
@@ -19,7 +26,7 @@ export function useCategories() {
     try {
       await seedDemoDataIfEmpty();
       const items = await categoriesStorage.getAll();
-      setCategories(items);
+      setCategories(items.map(normalizeCategory));
       setError(null);
     } catch {
       setError('No se pudieron cargar las categorías');
@@ -32,16 +39,16 @@ export function useCategories() {
     void refresh();
   }, [refresh]);
 
-  const createCategory = useCallback(async (name: string) => {
-    const next = [...categories, buildCategory(name)];
+  const createCategory = useCallback(async (input: CategoryInput) => {
+    const next = [...categories, buildCategory(input)];
     await categoriesStorage.saveAll(next);
     setCategories(next);
     setError(null);
   }, [categories]);
 
-  const updateCategory = useCallback(async (id: string, name: string) => {
+  const updateCategory = useCallback(async (id: string, input: CategoryInput) => {
     const next = categories.map((item) =>
-      item.id === id ? { ...item, name: name.trim() } : item,
+      item.id === id ? { ...item, ...input, name: input.name.trim() } : item,
     );
     await categoriesStorage.saveAll(next);
     setCategories(next);

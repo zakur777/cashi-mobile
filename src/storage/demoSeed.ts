@@ -1,18 +1,18 @@
-import type { Category, Transaction } from '../domain/types';
+import { CATEGORY_COLORS, type Category, type Transaction } from '../domain/types';
 import { categoriesStorage } from './categoriesStorage';
 import { transactionsStorage } from './transactionsStorage';
 
 export const DEMO_CATEGORIES: Category[] = [
-  { id: 'demo-cat-income', name: 'Ingresos' },
-  { id: 'demo-cat-food', name: 'Comida' },
-  { id: 'demo-cat-transport', name: 'Transporte' },
-  { id: 'demo-cat-entertainment', name: 'Ocio' },
+  { id: 'demo-cat-income', name: 'Ingresos', type: 'income', color: CATEGORY_COLORS.green },
+  { id: 'demo-cat-food', name: 'Comida', type: 'expense', color: CATEGORY_COLORS.lime },
+  { id: 'demo-cat-transport', name: 'Transporte', type: 'expense', color: CATEGORY_COLORS.teal },
+  { id: 'demo-cat-entertainment', name: 'Ocio', type: 'expense', color: CATEGORY_COLORS.purple },
 ];
 
 export const DEMO_TRANSACTIONS: Transaction[] = [
   {
     id: 'demo-tx-salary',
-    amount: 2400,
+    amount: 1250000,
     type: 'income',
     description: 'Sueldo mensual',
     date: '2026-05-01',
@@ -20,7 +20,7 @@ export const DEMO_TRANSACTIONS: Transaction[] = [
   },
   {
     id: 'demo-tx-groceries',
-    amount: 320,
+    amount: 42000,
     type: 'expense',
     description: 'Supermercado',
     date: '2026-05-04',
@@ -28,7 +28,7 @@ export const DEMO_TRANSACTIONS: Transaction[] = [
   },
   {
     id: 'demo-tx-transport',
-    amount: 85,
+    amount: 11500,
     type: 'expense',
     description: 'Transporte semanal',
     date: '2026-05-08',
@@ -36,7 +36,7 @@ export const DEMO_TRANSACTIONS: Transaction[] = [
   },
   {
     id: 'demo-tx-movie',
-    amount: 60,
+    amount: 12000,
     type: 'expense',
     description: 'Salida al cine',
     date: '2026-05-12',

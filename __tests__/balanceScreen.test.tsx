@@ -9,6 +9,10 @@ jest.mock('expo-router', () => ({
   useFocusEffect: (callback: () => void) => callback(),
 }));
 
+jest.mock('../src/hooks/useCategories', () => ({
+  useCategories: () => ({ categories: [], refresh: jest.fn() }),
+}));
+
 jest.mock('../src/hooks/useTransactions', () => ({
   useTransactions: () => mockUseTransactions(),
 }));
@@ -21,6 +25,12 @@ describe('BalanceTab', () => {
       totalIncome: 3500,
       totalExpense: 1200,
       balance: 2300,
+      primaryExpenseCategory: {
+        id: 'cat-2',
+        name: 'Comida',
+        color: '#EDF7BD',
+        amount: 1200,
+      },
       loading: false,
       error: null,
       refresh: mockRefresh,
@@ -31,11 +41,13 @@ describe('BalanceTab', () => {
     const screen = render(<BalanceTab />);
 
     expect(screen.getByText('Balance actual')).toBeTruthy();
-    expect(screen.getByText('$2300.00')).toBeTruthy();
+    expect(screen.getByText('$2.300')).toBeTruthy();
     expect(screen.getByText('Ingresos')).toBeTruthy();
-    expect(screen.getByText('+$3500.00')).toBeTruthy();
+    expect(screen.getByText('$3.500')).toBeTruthy();
     expect(screen.getByText('Egresos')).toBeTruthy();
-    expect(screen.getByText('-$1200.00')).toBeTruthy();
+    expect(screen.getAllByText('$1.200')).toHaveLength(2);
+    expect(screen.getByText('Categoría principal')).toBeTruthy();
+    expect(screen.getByText('Comida')).toBeTruthy();
   });
 
   it('refreshes data when screen gains focus', () => {
@@ -50,6 +62,7 @@ describe('BalanceTab', () => {
       totalIncome: 0,
       totalExpense: 0,
       balance: 0,
+      primaryExpenseCategory: null,
       loading: false,
       error: null,
       refresh: mockRefresh,

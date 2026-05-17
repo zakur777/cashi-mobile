@@ -4,15 +4,27 @@ import { SafeAreaView, StyleSheet, Text } from 'react-native';
 
 import { BalanceSummary } from '../../src/components/balance/BalanceSummary';
 import { colors, spacing } from '../../src/design/tokens';
+import { useCategories } from '../../src/hooks/useCategories';
 import { useTransactions } from '../../src/hooks/useTransactions';
 
 export default function BalanceTab() {
-  const { transactions, totalIncome, totalExpense, balance, loading, error, refresh } = useTransactions();
+  const { categories, refresh: refreshCategories } = useCategories();
+  const {
+    transactions,
+    totalIncome,
+    totalExpense,
+    balance,
+    primaryExpenseCategory,
+    loading,
+    error,
+    refresh,
+  } = useTransactions({ categories });
 
   useFocusEffect(
     useCallback(() => {
+      void refreshCategories();
       void refresh();
-    }, [refresh]),
+    }, [refresh, refreshCategories]),
   );
 
   return (
@@ -20,7 +32,14 @@ export default function BalanceTab() {
       {loading ? <Text style={styles.text}>Cargando balance...</Text> : null}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      {!loading ? <BalanceSummary totalIncome={totalIncome} totalExpense={totalExpense} balance={balance} /> : null}
+      {!loading ? (
+        <BalanceSummary
+          totalIncome={totalIncome}
+          totalExpense={totalExpense}
+          balance={balance}
+          primaryExpenseCategory={primaryExpenseCategory}
+        />
+      ) : null}
       {!loading && transactions.length === 0 ? (
         <Text style={styles.emptyState}>Todavía no hay movimientos para mostrar balance.</Text>
       ) : null}
