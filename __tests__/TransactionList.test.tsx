@@ -5,7 +5,12 @@ import { TransactionList } from '../src/components/transactions/TransactionList'
 describe('TransactionList', () => {
   it('shows empty state when there are no transactions', () => {
     const screen = render(
-      <TransactionList transactions={[]} onCreate={jest.fn()} onEdit={jest.fn()} onDelete={jest.fn()} />,
+      <TransactionList
+        transactions={[]}
+        onCreate={jest.fn()}
+        onEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
     );
 
     expect(screen.getByText('Todavía no hay transacciones.')).toBeTruthy();
@@ -88,5 +93,52 @@ describe('TransactionList', () => {
 
     expect(screen.getAllByText('+$99')).toHaveLength(2);
     expect(screen.getByText('Varios · 2026-05-10')).toBeTruthy();
+  });
+
+  it('exposes accessible add action and invokes create', () => {
+    const onCreate = jest.fn();
+
+    const screen = render(
+      <TransactionList
+        transactions={[]}
+        onCreate={onCreate}
+        onEdit={jest.fn()}
+        onDelete={jest.fn()}
+      />,
+    );
+
+    fireEvent.press(screen.getByLabelText('Agregar movimiento'));
+
+    expect(onCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it('exposes transaction-specific row actions', () => {
+    const onEdit = jest.fn();
+    const onDelete = jest.fn();
+
+    const screen = render(
+      <TransactionList
+        transactions={[
+          {
+            id: 'tx-30',
+            amount: 4500,
+            type: 'expense',
+            description: 'Café',
+            date: '2026-05-12',
+            categoryId: 'cat-3',
+            categoryName: 'Comida',
+          },
+        ]}
+        onCreate={jest.fn()}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />,
+    );
+
+    fireEvent.press(screen.getByLabelText('Editar Café'));
+    fireEvent.press(screen.getByLabelText('Eliminar Café'));
+
+    expect(onEdit).toHaveBeenCalledWith('tx-30');
+    expect(onDelete).toHaveBeenCalledWith('tx-30');
   });
 });

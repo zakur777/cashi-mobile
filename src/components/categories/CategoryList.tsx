@@ -2,9 +2,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, typography } from '../../design/tokens';
+import {
+  colors,
+  componentSizes,
+  layout,
+  radius,
+  spacing,
+  typography,
+} from '../../design/tokens';
 import { formatSignedCLP } from '../../domain/money';
-import type { Category, Transaction } from '../../domain/types';
+import {
+  CATEGORY_COLORS,
+  type Category,
+  type Transaction,
+} from '../../domain/types';
 
 interface CategoryListProps {
   categories: Category[];
@@ -14,16 +25,39 @@ interface CategoryListProps {
   onDelete: (id: string) => void;
 }
 
-const getCategorySummary = (category: Category, transactions: Transaction[]) => {
-  const related = transactions.filter((transaction) => transaction.categoryId === category.id);
-  const total = related.reduce((sum, transaction) => sum + transaction.amount, 0);
+const purpleIconColor = '#C9C4FF';
+
+const getVisibleCategoryIconColor = (color: string) =>
+  color === CATEGORY_COLORS.purple ? purpleIconColor : color;
+
+const getCategorySummary = (
+  category: Category,
+  transactions: Transaction[],
+) => {
+  const related = transactions.filter(
+    (transaction) => transaction.categoryId === category.id,
+  );
+  const total = related.reduce(
+    (sum, transaction) => sum + transaction.amount,
+    0,
+  );
 
   return `${related.length} movimiento${related.length === 1 ? '' : 's'} · ${formatSignedCLP(total, category.type)}`;
 };
 
-export function CategoryList({ categories, transactions = [], onCreate, onEdit, onDelete }: CategoryListProps) {
-  const incomeCount = categories.filter((category) => category.type === 'income').length;
-  const expenseCount = categories.filter((category) => category.type === 'expense').length;
+export function CategoryList({
+  categories,
+  transactions = [],
+  onCreate,
+  onEdit,
+  onDelete,
+}: CategoryListProps) {
+  const incomeCount = categories.filter(
+    (category) => category.type === 'income',
+  ).length;
+  const expenseCount = categories.filter(
+    (category) => category.type === 'expense',
+  ).length;
 
   return (
     <View style={styles.container}>
@@ -32,16 +66,25 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
           <Text style={styles.kicker}>Organización</Text>
           <Text style={styles.title}>Categorías</Text>
         </View>
-        <Pressable style={styles.iconButton} onPress={onCreate}>
+        <Pressable
+          accessibilityRole='button'
+          accessibilityLabel='Agregar categoría'
+          style={styles.iconButton}
+          onPress={onCreate}
+        >
           <Text style={styles.iconButtonText}>＋</Text>
         </Pressable>
       </View>
 
       {categories.length > 0 ? (
-        <GradientSurface style={styles.summaryCard} colors={['#281C59', '#151621', '#070811']}>
+        <GradientSurface
+          style={styles.summaryCard}
+          colors={['#281C59', '#151621', '#070811']}
+        >
           <Text style={styles.summaryLabel}>Paleta Cashi activa</Text>
           <Text style={styles.summaryText}>
-            {categories.length} categorías · {incomeCount} ingreso{incomeCount === 1 ? '' : 's'} · {expenseCount} egreso
+            {categories.length} categorías · {incomeCount} ingreso
+            {incomeCount === 1 ? '' : 's'} · {expenseCount} egreso
             {expenseCount === 1 ? '' : 's'}
           </Text>
         </GradientSurface>
@@ -50,31 +93,60 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
       <FlatList
         data={categories}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={categories.length === 0 ? styles.emptyContainer : styles.listContainer}
-        ListEmptyComponent={<Text style={styles.emptyText}>Todavía no hay categorías.</Text>}
+        contentContainerStyle={
+          categories.length === 0 ? styles.emptyContainer : styles.listContainer
+        }
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Todavía no hay categorías.</Text>
+        }
         renderItem={({ item }) => (
           <View style={[styles.card, { borderLeftColor: item.color }]}>
             <View style={styles.iconBadge}>
               <Ionicons
-                name={item.type === 'income' ? 'card-outline' : item.name.toLowerCase().includes('comida') ? 'bag-outline' : 'briefcase-outline'}
+                name={
+                  item.type === 'income'
+                    ? 'card-outline'
+                    : item.name.toLowerCase().includes('comida')
+                      ? 'bag-outline'
+                      : 'briefcase-outline'
+                }
                 size={18}
-                color={item.color}
+                color={getVisibleCategoryIconColor(item.color)}
               />
             </View>
             <View style={styles.content}>
               <View style={styles.categoryHeader}>
                 <Text style={styles.name}>{item.name}</Text>
-                <Text style={[styles.type, item.type === 'income' ? styles.incomeType : styles.expenseType]}>
+                <Text
+                  style={[
+                    styles.type,
+                    item.type === 'income'
+                      ? styles.incomeType
+                      : styles.expenseType,
+                  ]}
+                >
                   {item.type === 'income' ? 'Ingreso' : 'Egreso'}
                 </Text>
               </View>
-              <Text style={styles.meta}>{getCategorySummary(item, transactions)}</Text>
+              <Text style={styles.meta}>
+                {getCategorySummary(item, transactions)}
+              </Text>
             </View>
             <View style={styles.actionsColumn}>
-              <Pressable onPress={() => onEdit(item.id)} hitSlop={8}>
+              <Pressable
+                accessibilityRole='button'
+                accessibilityLabel={`Editar ${item.name}`}
+                onPress={() => onEdit(item.id)}
+                hitSlop={8}
+              >
                 <Text style={styles.editText}>Editar</Text>
               </Pressable>
-              <Pressable onPress={() => onDelete(item.id)} hitSlop={8}>
+              <Pressable
+                accessibilityRole='button'
+                accessibilityLabel={`Eliminar ${item.name}`}
+                onPress={() => onDelete(item.id)}
+                hitSlop={8}
+              >
                 <Text style={styles.deleteText}>Eliminar</Text>
               </Pressable>
             </View>
@@ -86,8 +158,18 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: 'transparent' },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
+  container: {
+    flex: 1,
+    padding: layout.screenPadding,
+    paddingBottom: 96,
+    backgroundColor: 'transparent',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
   kicker: {
     color: colors.lime,
     fontFamily: typography.bodyBold,
@@ -96,18 +178,28 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
-  title: { color: colors.textPrimary, fontFamily: typography.display, fontSize: 30, fontWeight: '800' },
+  title: {
+    color: colors.textPrimary,
+    fontFamily: typography.display,
+    fontSize: 30,
+    fontWeight: '800',
+  },
   iconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.sm,
+    width: componentSizes.iconButton,
+    height: componentSizes.iconButton,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.surfaceSoft,
   },
-  iconButtonText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 26, lineHeight: 28 },
+  iconButtonText: {
+    color: colors.textPrimary,
+    fontFamily: typography.bodyBold,
+    fontSize: 26,
+    lineHeight: 28,
+  },
   summaryCard: {
     borderRadius: radius.md,
     borderWidth: 1,
@@ -122,11 +214,22 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     textTransform: 'uppercase',
   },
-  summaryText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 15, fontWeight: '700', marginTop: spacing.xs },
+  summaryText: {
+    color: colors.textPrimary,
+    fontFamily: typography.bodyBold,
+    fontSize: 15,
+    fontWeight: '700',
+    marginTop: spacing.xs,
+  },
   listContainer: { paddingBottom: spacing.xl },
-  emptyContainer: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
+  emptyContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   emptyText: { color: colors.textSecondary, fontSize: 16 },
   card: {
+    minHeight: componentSizes.listRowMinHeight,
     borderWidth: 1,
     borderLeftWidth: 3,
     borderColor: colors.border,
@@ -139,15 +242,20 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   iconBadge: {
-    width: 46,
-    height: 46,
+    width: componentSizes.listIcon,
+    height: componentSizes.listIcon,
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.055)',
   },
   content: { flex: 1, gap: 4 },
-  categoryHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap' },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    flexWrap: 'wrap',
+  },
   type: {
     overflow: 'hidden',
     borderRadius: radius.pill,
@@ -159,8 +267,18 @@ const styles = StyleSheet.create({
   },
   incomeType: { color: colors.textOnAccent, backgroundColor: colors.success },
   expenseType: { color: colors.danger, backgroundColor: colors.dangerSoft },
-  name: { fontFamily: typography.bodyBold, fontSize: 17, fontWeight: '800', color: colors.textPrimary },
-  meta: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 12 },
+  name: {
+    fontFamily: typography.bodyBold,
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.textPrimary,
+  },
+  meta: {
+    color: colors.textSecondary,
+    fontFamily: typography.body,
+    fontSize: 12,
+    lineHeight: 17,
+  },
   actionsColumn: { gap: spacing.xs, alignItems: 'flex-end' },
   editText: { color: colors.lime, fontWeight: '800', fontSize: 12 },
   deleteText: { color: colors.danger, fontWeight: '800', fontSize: 12 },

@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, typography } from '../../design/tokens';
+import { colors, layout, radius, typography } from '../../design/tokens';
 
 const mainRoutes = ['index', 'categories', 'balance'];
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     left: 14,
     right: 14,
     bottom: 16,
-    height: 72,
+    height: layout.tabBarHeight,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   itemShell: { flex: 1, borderRadius: radius.md, overflow: 'hidden' },
-  item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderRadius: radius.md },
-  itemActive: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderRadius: radius.md },
+  item: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderRadius: radius.md, paddingVertical: 6 },
+  itemActive: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4, borderRadius: radius.md, paddingVertical: 6 },
   label: { color: colors.textSecondary, fontFamily: typography.bodyBold, fontSize: 10, fontWeight: '800' },
   labelActive: { color: colors.textOnAccent },
 });

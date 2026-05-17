@@ -53,3 +53,16 @@ export const radius = {
 export const touchTarget = {
   minHeight: 48,
 } as const;
+
+export const layout = {
+  screenPadding: spacing.md,
+  tabBarHeight: 72,
+} as const;
+
+export const componentSizes = {
+  iconButton: touchTarget.minHeight,
+  listIcon: 46,
+  listRowMinHeight: 72,
+  inputMinHeight: 52,
+  segmentMinHeight: 44,
+} as const;

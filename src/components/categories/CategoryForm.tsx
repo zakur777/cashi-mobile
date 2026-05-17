@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, touchTarget, typography } from '../../design/tokens';
+import { colors, componentSizes, layout, radius, spacing, touchTarget, typography } from '../../design/tokens';
 import { CATEGORY_COLORS, type CategoryColor, type TransactionType } from '../../domain/types';
 
 interface CategoryFormProps {
@@ -125,12 +125,12 @@ export function CategoryForm({
 
 const styles = StyleSheet.create({
   keyboardContainer: { flex: 1, backgroundColor: 'transparent' },
-  container: { flexGrow: 1, padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
+  container: { flexGrow: 1, padding: layout.screenPadding, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
   topbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.sm,
+    width: componentSizes.iconButton,
+    height: componentSizes.iconButton,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   fieldGroup: { gap: spacing.xs },
   label: { fontFamily: typography.bodyBold, fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
   input: {
-    minHeight: 52,
+    minHeight: componentSizes.inputMinHeight,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceSoft,
   },
   inputError: { borderColor: colors.danger },
-  error: { color: colors.danger, marginTop: 2 },
+  error: { color: colors.danger, fontFamily: typography.body, fontSize: 12, lineHeight: 17, marginTop: 2 },
   segmentedRow: {
     flexDirection: 'row',
     gap: spacing.xs,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   segmentButton: {
     flex: 1,
-    minHeight: touchTarget.minHeight,
+    minHeight: componentSizes.segmentMinHeight,
     borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
@@ -201,7 +201,16 @@ const styles = StyleSheet.create({
   segmentButtonActive: { backgroundColor: colors.secondary },
   segmentText: { color: colors.textSecondary, fontFamily: typography.bodyBold, fontWeight: '800' },
   segmentTextActive: { color: colors.textOnAccent },
-  paletteRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
+  paletteRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+    padding: spacing.xs,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceSoft,
+  },
   colorSwatch: {
     width: touchTarget.minHeight,
     height: touchTarget.minHeight,

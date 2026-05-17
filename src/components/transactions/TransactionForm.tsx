@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, touchTarget, typography } from '../../design/tokens';
+import { colors, componentSizes, layout, radius, spacing, touchTarget, typography } from '../../design/tokens';
 import type { Category, TransactionType } from '../../domain/types';
 
 interface TransactionFormProps {
@@ -173,12 +173,12 @@ export function TransactionForm(props: TransactionFormProps) {
 
 const styles = StyleSheet.create({
   keyboardContainer: { flex: 1, backgroundColor: 'transparent' },
-  container: { padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
+  container: { padding: layout.screenPadding, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
   topbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.sm,
+    width: componentSizes.iconButton,
+    height: componentSizes.iconButton,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: 'center',
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   fieldGroup: { gap: spacing.xs },
   label: { fontFamily: typography.bodyBold, fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
   input: {
-    minHeight: 52,
+    minHeight: componentSizes.inputMinHeight,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
@@ -227,12 +227,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceSoft,
   },
   inputError: { borderColor: colors.danger },
-  error: { color: colors.danger, marginTop: 2 },
-  typeRow: { flexDirection: 'row', gap: spacing.xs, padding: 4, borderRadius: radius.md, backgroundColor: colors.surfaceSoft },
+  error: { color: colors.danger, fontFamily: typography.body, fontSize: 12, lineHeight: 17, marginTop: 2 },
+  typeRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    padding: 4,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSoft,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   typeButton: {
     flex: 1,
     borderRadius: radius.sm,
-    minHeight: touchTarget.minHeight,
+    minHeight: componentSizes.segmentMinHeight,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -254,7 +262,7 @@ const styles = StyleSheet.create({
   },
   categoryChipActive: { backgroundColor: colors.surfaceSoft, borderWidth: 2 },
   categoryDot: { width: 10, height: 10, borderRadius: 5 },
-  categoryChipText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontWeight: '800' },
+  categoryChipText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 13, fontWeight: '800' },
   saveButtonShell: { marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   saveButton: {
     borderRadius: radius.pill,
