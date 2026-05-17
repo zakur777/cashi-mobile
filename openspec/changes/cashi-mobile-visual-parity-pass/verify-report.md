@@ -19,4 +19,5 @@ PASS
 - AppBackground exposes glow layers behind all tab and form screens.
 - Android status/safe-area overlap was addressed with `react-native-safe-area-context` on root, tab, login, and form screens.
 - Detail forms regained explicit back controls so users can return without relying on the bottom tab bar.
-- Background glows now use an optimized WebP asset generated from OpenDesign-style layered radial gradients, rendered with `resizeMode="cover"` for stable Android parity.
+- Background glows now use a clean PNG gradient asset generated from OpenDesign-style layered radial gradients, rendered with `resizeMode="cover"` for stable Android parity.
+- Balance card surfaces were retuned toward the OpenDesign `--grad-card`/translucent card treatment.

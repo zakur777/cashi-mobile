@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../design/tokens';
 
-const backgroundImage = require('../../assets/backgrounds/cashi-app-background.webp');
+const backgroundImage = require('../../assets/backgrounds/cashi-app-background.png');
 
 interface AppBackgroundProps {
   children: ReactNode;

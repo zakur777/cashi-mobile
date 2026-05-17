@@ -33,7 +33,12 @@ export function BalanceSummary({ totalIncome, totalExpense, balance, primaryExpe
         </View>
       </View>
 
-      <GradientSurface style={styles.heroCard} colors={['#281C59', '#1A1D2E', '#070811']}>
+      <GradientSurface
+        style={styles.heroCard}
+        colors={['#2A205B', '#202943', '#111225']}
+        start={{ x: 0.05, y: 0.05 }}
+        end={{ x: 1, y: 1 }}
+      >
         <Text style={styles.heroKicker}>Balance actual</Text>
         <Text style={styles.mainAmount}>{formatCLP(balance)}</Text>
         <Text style={styles.heroHelp}>Calculado desde transacciones locales en CLP, sin decimales.</Text>
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
     borderWidth: 1,
     borderRadius: radius.lg,
-    padding: spacing.lg,
+    padding: 20,
   },
   heroKicker: {
     color: colors.textSecondary,
@@ -128,8 +133,8 @@ const styles = StyleSheet.create({
   miniStats: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg },
   miniStat: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.075)',
-    borderColor: colors.border,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
     borderRadius: radius.md,
     padding: spacing.md,
@@ -146,8 +151,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   principalCard: {
-    backgroundColor: 'rgba(255,255,255,0.055)',
-    borderColor: colors.borderStrong,
+    backgroundColor: 'rgba(21,22,33,0.82)',
+    borderColor: colors.border,
     borderWidth: 1,
     borderRadius: radius.md,
     padding: spacing.md,
@@ -165,7 +170,7 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderColor: colors.borderStrong,
     borderRadius: radius.md,
-    backgroundColor: 'rgba(237,247,189,0.045)',
+    backgroundColor: 'rgba(21,22,33,0.68)',
   },
   stateTitle: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 14, fontWeight: '800', marginBottom: 5 },
   stateText: { color: colors.textSecondary, fontFamily: typography.body, fontSize: 13, lineHeight: 18 },
