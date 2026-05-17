@@ -6,9 +6,10 @@
 - [x] 4. Apply transparent containers to tab screens and form screens.
 - [x] 5. Fix Android safe-area/status overlap and form back navigation.
 - [x] 6. Replace hard circular background glows with layered linear washes closer to OpenDesign.
-- [x] 7. Verify typecheck, tests, and Android export.
+- [x] 7. Install `react-native-svg` and implement OpenDesign-style radial background gradients.
+- [x] 8. Verify typecheck, tests, and Android export.
 
 ## Remaining Limits
 
 - Exact OpenDesign typography still requires licensed `Aeonik Pro` / `Söhne` font assets.
-- Native gradients approximate CSS radial gradients/backdrop-filter.
+- Backdrop-filter remains approximated by translucent surfaces; background radial gradients now use SVG.

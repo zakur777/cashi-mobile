@@ -1,35 +1,51 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Svg, { Defs, LinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
 
-import { GradientSurface } from './GradientSurface';
 import { colors } from '../../design/tokens';
 
 interface AppBackgroundProps {
   children: ReactNode;
 }
 
+function BackgroundGlow() {
+  return (
+    <Svg pointerEvents="none" style={StyleSheet.absoluteFill} preserveAspectRatio="none" viewBox="0 0 100 100">
+      <Defs>
+        <RadialGradient id="topTeal" cx="50%" cy="-10%" rx="62%" ry="48%" fx="50%" fy="-10%">
+          <Stop offset="0" stopColor="rgb(78,141,156)" stopOpacity="0.36" />
+          <Stop offset="0.38" stopColor="rgb(78,141,156)" stopOpacity="0.13" />
+          <Stop offset="1" stopColor="rgb(78,141,156)" stopOpacity="0" />
+        </RadialGradient>
+        <RadialGradient id="rightPurple" cx="100%" cy="4%" rx="58%" ry="52%" fx="100%" fy="4%">
+          <Stop offset="0" stopColor="rgb(40,28,89)" stopOpacity="0.6" />
+          <Stop offset="0.42" stopColor="rgb(40,28,89)" stopOpacity="0.22" />
+          <Stop offset="1" stopColor="rgb(40,28,89)" stopOpacity="0" />
+        </RadialGradient>
+        <RadialGradient id="leftPurple" cx="-8%" cy="24%" rx="62%" ry="58%" fx="-8%" fy="24%">
+          <Stop offset="0" stopColor="rgb(40,28,89)" stopOpacity="0.48" />
+          <Stop offset="0.45" stopColor="rgb(40,28,89)" stopOpacity="0.2" />
+          <Stop offset="1" stopColor="rgb(40,28,89)" stopOpacity="0" />
+        </RadialGradient>
+        <LinearGradient id="depthWash" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0" stopColor="rgb(27,45,61)" stopOpacity="0.2" />
+          <Stop offset="0.42" stopColor="rgb(32,33,66)" stopOpacity="0.16" />
+          <Stop offset="1" stopColor="rgb(5,6,11)" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+      <Rect width="100" height="100" fill={colors.surface} />
+      <Rect width="100" height="100" fill="url(#depthWash)" />
+      <Rect width="100" height="100" fill="url(#topTeal)" />
+      <Rect width="100" height="100" fill="url(#rightPurple)" />
+      <Rect width="100" height="100" fill="url(#leftPurple)" />
+    </Svg>
+  );
+}
+
 export function AppBackground({ children }: AppBackgroundProps) {
   return (
     <View style={styles.container}>
-      <GradientSurface style={styles.baseGlow} colors={['#05060B', '#05060B', '#05060B']} />
-      <GradientSurface
-        style={styles.topGlow}
-        colors={['rgba(78,141,156,0.26)', 'rgba(40,28,89,0.34)', 'rgba(5,6,11,0)']}
-        start={{ x: 0.52, y: -0.12 }}
-        end={{ x: 0.52, y: 1 }}
-      />
-      <GradientSurface
-        style={styles.rightWash}
-        colors={['rgba(40,28,89,0)', 'rgba(78,141,156,0.16)', 'rgba(40,28,89,0.42)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      />
-      <GradientSurface
-        style={styles.leftWash}
-        colors={['rgba(40,28,89,0.46)', 'rgba(40,28,89,0.18)', 'rgba(5,6,11,0)']}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
-      />
+      <BackgroundGlow />
       {children}
     </View>
   );
@@ -37,28 +53,4 @@ export function AppBackground({ children }: AppBackgroundProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface, overflow: 'hidden' },
-  baseGlow: { ...StyleSheet.absoluteFillObject },
-  topGlow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 250,
-  },
-  rightWash: {
-    position: 'absolute',
-    top: -12,
-    right: -88,
-    width: 260,
-    height: 360,
-    transform: [{ rotate: '18deg' }],
-  },
-  leftWash: {
-    position: 'absolute',
-    top: 122,
-    left: -138,
-    width: 300,
-    height: 340,
-    transform: [{ rotate: '-8deg' }],
-  },
 });
