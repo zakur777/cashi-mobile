@@ -10,9 +10,10 @@
 - [x] 8. Generate optimized WebP background asset from OpenDesign-inspired layered gradients.
 - [x] 9. Switch `AppBackground` to image-backed `cover` rendering for more stable visual parity.
 - [x] 10. Replace lossy WebP background with cleaner PNG gradient asset and retune balance surfaces.
-- [x] 11. Verify typecheck, tests, and Android export.
+- [x] 11. Replace static background asset with Skia-rendered gradients for closer native control.
+- [x] 12. Verify typecheck, tests, and Android export.
 
 ## Remaining Limits
 
 - Exact OpenDesign typography still requires licensed `Aeonik Pro` / `Söhne` font assets.
-- Backdrop-filter remains approximated by translucent surfaces; background glow now uses a PNG gradient asset for cleaner Android rendering across screens.
+- Backdrop-filter remains approximated by translucent surfaces; background glow now uses Skia gradients for native radial/linear control. Expo Go may require a development build for Skia runtime support.
