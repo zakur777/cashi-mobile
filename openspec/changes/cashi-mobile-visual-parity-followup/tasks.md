@@ -6,6 +6,7 @@
 - [x] 4. Verify typecheck, tests, and Android export.
 
 ## Remaining Visual Parity Notes
+
 - Exact OpenDesign typography requires licensed `Aeonik Pro` / `Söhne` font files.
 - Exact active tab gradient/background would require a custom tab bar rather than default Expo Router tab styling.
 - CSS radial gradients/backdrop-filter are approximated with native gradients and layered views.

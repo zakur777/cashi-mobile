@@ -81,7 +81,7 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: colors.surface },
+  container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: 'transparent' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   kicker: {
     color: colors.lime,

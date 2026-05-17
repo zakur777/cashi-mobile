@@ -40,7 +40,7 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
           <Text style={styles.title}>Movimientos</Text>
         </View>
         <Pressable style={styles.iconButton} onPress={onCreate}>
-          <Text style={styles.iconButtonText}>+</Text>
+          <Text style={styles.iconButtonText}>＋</Text>
         </Pressable>
       </View>
 
@@ -86,7 +86,7 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: colors.surface },
+  container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: 'transparent' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   kicker: {
     color: colors.lime,

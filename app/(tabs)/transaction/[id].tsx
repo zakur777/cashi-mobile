@@ -2,8 +2,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 
-import { colors } from '../../../src/design/tokens';
 import { TransactionForm } from '../../../src/components/transactions/TransactionForm';
+import { AppBackground } from '../../../src/components/ui/AppBackground';
 import { useCategories } from '../../../src/hooks/useCategories';
 import { useTransactionForm } from '../../../src/hooks/useTransactionForm';
 import { useTransactions } from '../../../src/hooks/useTransactions';
@@ -49,38 +49,40 @@ export default function TransactionDetailScreen() {
   }, [current, isNew, setAmount, setCategoryId, setDate, setDescription, setType]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TransactionForm
-        title={isNew ? 'Nueva transacción' : 'Editar transacción'}
-        amount={amount}
-        type={type}
-        description={description}
-        date={date}
-        categoryId={categoryId}
-        categories={categories}
-        errors={errors}
-        loading={submitting}
-        saveLabel={isNew ? 'Crear transacción' : 'Guardar cambios'}
-        onChangeAmount={setAmount}
-        onChangeType={setType}
-        onChangeDescription={setDescription}
-        onChangeDate={setDate}
-        onChangeCategoryId={setCategoryId}
-        onSave={() => {
-          void handleSubmit();
-        }}
-        onDelete={
-          !isNew && id
-            ? () => {
-                void deleteTransaction(id).then(() => router.back());
-              }
-            : undefined
-        }
-      />
-    </SafeAreaView>
+    <AppBackground>
+      <SafeAreaView style={styles.container}>
+        <TransactionForm
+          title={isNew ? 'Nueva transacción' : 'Editar transacción'}
+          amount={amount}
+          type={type}
+          description={description}
+          date={date}
+          categoryId={categoryId}
+          categories={categories}
+          errors={errors}
+          loading={submitting}
+          saveLabel={isNew ? 'Crear transacción' : 'Guardar cambios'}
+          onChangeAmount={setAmount}
+          onChangeType={setType}
+          onChangeDescription={setDescription}
+          onChangeDate={setDate}
+          onChangeCategoryId={setCategoryId}
+          onSave={() => {
+            void handleSubmit();
+          }}
+          onDelete={
+            !isNew && id
+              ? () => {
+                  void deleteTransaction(id).then(() => router.back());
+                }
+              : undefined
+          }
+        />
+      </SafeAreaView>
+    </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1, backgroundColor: 'transparent' },
 });

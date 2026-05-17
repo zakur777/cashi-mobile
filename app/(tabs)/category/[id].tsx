@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 
 import { CategoryForm } from '../../../src/components/categories/CategoryForm';
-import { colors } from '../../../src/design/tokens';
+import { AppBackground } from '../../../src/components/ui/AppBackground';
 import { CATEGORY_COLORS } from '../../../src/domain/types';
 import { useCategories } from '../../../src/hooks/useCategories';
 import { useCategoryForm } from '../../../src/hooks/useCategoryForm';
@@ -41,33 +41,35 @@ export default function CategoryDetailScreen() {
   }, [current, isNew, setColor, setName, setType]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <CategoryForm
-        title={isNew ? 'Nueva categoría' : 'Editar categoría'}
-        name={name}
-        type={type}
-        color={color}
-        error={errors.name}
-        loading={submitting}
-        saveLabel={isNew ? 'Crear categoría' : 'Guardar cambios'}
-        onChangeName={setName}
-        onChangeType={setType}
-        onChangeColor={setColor}
-        onSave={() => {
-          void handleSubmit();
-        }}
-        onDelete={
-          !isNew && id
-            ? () => {
-                void deleteCategory(id).then(() => router.back());
-              }
-            : undefined
-        }
-      />
-    </SafeAreaView>
+    <AppBackground>
+      <SafeAreaView style={styles.container}>
+        <CategoryForm
+          title={isNew ? 'Nueva categoría' : 'Editar categoría'}
+          name={name}
+          type={type}
+          color={color}
+          error={errors.name}
+          loading={submitting}
+          saveLabel={isNew ? 'Crear categoría' : 'Guardar cambios'}
+          onChangeName={setName}
+          onChangeType={setType}
+          onChangeColor={setColor}
+          onSave={() => {
+            void handleSubmit();
+          }}
+          onDelete={
+            !isNew && id
+              ? () => {
+                  void deleteCategory(id).then(() => router.back());
+                }
+              : undefined
+          }
+        />
+      </SafeAreaView>
+    </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1, backgroundColor: 'transparent' },
 });

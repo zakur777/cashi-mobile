@@ -161,8 +161,8 @@ export function TransactionForm(props: TransactionFormProps) {
 }
 
 const styles = StyleSheet.create({
-  keyboardContainer: { flex: 1, backgroundColor: colors.surface },
-  container: { padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: colors.surface },
+  keyboardContainer: { flex: 1, backgroundColor: 'transparent' },
+  container: { padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
   heroCard: {
     borderRadius: radius.lg,
     borderWidth: 1,

@@ -113,8 +113,8 @@ export function CategoryForm({
 }
 
 const styles = StyleSheet.create({
-  keyboardContainer: { flex: 1, backgroundColor: colors.surface },
-  container: { flexGrow: 1, padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: colors.surface },
+  keyboardContainer: { flex: 1, backgroundColor: 'transparent' },
+  container: { flexGrow: 1, padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
   previewCard: {
     borderRadius: radius.lg,
     borderWidth: 1,

@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 
 import { CategoryList } from '../../src/components/categories/CategoryList';
+import { AppBackground } from '../../src/components/ui/AppBackground';
 import { colors, spacing } from '../../src/design/tokens';
 import { useCategories } from '../../src/hooks/useCategories';
 import { useTransactions } from '../../src/hooks/useTransactions';
@@ -20,27 +21,29 @@ export default function CategoriesTab() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {loading ? <Text style={styles.stateText}>Cargando categorías...</Text> : null}
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+    <AppBackground>
+      <SafeAreaView style={styles.container}>
+        {loading ? <Text style={styles.stateText}>Cargando categorías...</Text> : null}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      {!loading ? (
-        <CategoryList
-          categories={categories}
-          transactions={transactions}
-          onCreate={() => router.push('/(tabs)/category/new')}
-          onEdit={(id) => router.push(`/(tabs)/category/${id}`)}
-          onDelete={(id) => {
-            void deleteCategory(id);
-          }}
-        />
-      ) : null}
-    </SafeAreaView>
+        {!loading ? (
+          <CategoryList
+            categories={categories}
+            transactions={transactions}
+            onCreate={() => router.push('/(tabs)/category/new')}
+            onEdit={(id) => router.push(`/(tabs)/category/${id}`)}
+            onDelete={(id) => {
+              void deleteCategory(id);
+            }}
+          />
+        ) : null}
+      </SafeAreaView>
+    </AppBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1, backgroundColor: 'transparent' },
   stateText: { paddingHorizontal: spacing.md, paddingTop: spacing.md, color: colors.textSecondary },
   errorText: { paddingHorizontal: spacing.md, paddingTop: spacing.xs, color: colors.danger },
 });
