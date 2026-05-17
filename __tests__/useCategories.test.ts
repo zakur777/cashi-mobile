@@ -10,6 +10,10 @@ jest.mock('../src/storage/categoriesStorage', () => ({
   },
 }));
 
+jest.mock('../src/storage/demoSeed', () => ({
+  seedDemoDataIfEmpty: jest.fn().mockResolvedValue(false),
+}));
+
 const mockedCategoriesStorage = categoriesStorage as jest.Mocked<typeof categoriesStorage>;
 
 describe('useCategories', () => {

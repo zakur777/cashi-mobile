@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Category } from '../domain/types';
 import { categoriesStorage } from '../storage/categoriesStorage';
+import { seedDemoDataIfEmpty } from '../storage/demoSeed';
 
 const buildCategory = (name: string): Category => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -16,6 +17,7 @@ export function useCategories() {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
+      await seedDemoDataIfEmpty();
       const items = await categoriesStorage.getAll();
       setCategories(items);
       setError(null);

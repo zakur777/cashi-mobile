@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { Category, Transaction, TransactionType } from '../domain/types';
+import { seedDemoDataIfEmpty } from '../storage/demoSeed';
 import { transactionsStorage } from '../storage/transactionsStorage';
 
 interface TransactionInput {
@@ -28,6 +29,7 @@ export function useTransactions({ categories = [] }: UseTransactionsOptions = {}
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
+      await seedDemoDataIfEmpty();
       const items = await transactionsStorage.getAll();
       setTransactions(items);
       setError(null);

@@ -11,6 +11,10 @@ jest.mock('../src/storage/transactionsStorage', () => ({
   },
 }));
 
+jest.mock('../src/storage/demoSeed', () => ({
+  seedDemoDataIfEmpty: jest.fn().mockResolvedValue(false),
+}));
+
 const mockedTransactionsStorage = transactionsStorage as jest.Mocked<typeof transactionsStorage>;
 
 describe('useTransactions', () => {
