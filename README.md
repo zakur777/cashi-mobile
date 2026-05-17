@@ -20,15 +20,15 @@ La app está optimizada para validación **Android-first** con Expo Go/emulador.
 
 ## Stack técnico
 
-| Área | Herramienta |
-|---|---|
-| Mobile | React Native + Expo |
-| Lenguaje | TypeScript |
-| Navegación | Expo Router |
-| Persistencia | AsyncStorage |
-| Validación | Zod |
-| UI | Tokens propios + `expo-linear-gradient` + Inter |
-| Testing | Jest + jest-expo + Testing Library |
+| Área         | Herramienta                                     |
+| ------------ | ----------------------------------------------- |
+| Mobile       | React Native + Expo                             |
+| Lenguaje     | TypeScript                                      |
+| Navegación   | Expo Router                                     |
+| Persistencia | AsyncStorage                                    |
+| Validación   | Zod                                             |
+| UI           | Tokens propios + `expo-linear-gradient` + Inter |
+| Testing      | Jest + jest-expo + Testing Library              |
 
 ## Instalación
 
@@ -159,10 +159,10 @@ __tests__/        # pruebas unitarias y de componentes
 
 ```ts
 interface Category {
-  id: string
-  name: string
-  type: 'income' | 'expense'
-  color: CategoryColor
+  id: string;
+  name: string;
+  type: "income" | "expense";
+  color: CategoryColor;
 }
 ```
 
@@ -170,12 +170,12 @@ interface Category {
 
 ```ts
 interface Transaction {
-  id: string
-  amount: number
-  type: 'income' | 'expense'
-  description: string
-  date: string
-  categoryId: string
+  id: string;
+  amount: number;
+  type: "income" | "expense";
+  description: string;
+  date: string;
+  categoryId: string;
 }
 ```
 
@@ -183,9 +183,9 @@ interface Transaction {
 
 Los datos se guardan localmente con una key por entidad:
 
-| Entidad | Key |
-|---|---|
-| Categorías | `categories` |
+| Entidad       | Key            |
+| ------------- | -------------- |
+| Categorías    | `categories`   |
 | Transacciones | `transactions` |
 
 La app usa el patrón **read-modify-write**: leer datos actuales, modificar en memoria y guardar el arreglo completo nuevamente.
@@ -208,14 +208,14 @@ Los errores se muestran en pantalla, cerca del campo correspondiente.
 
 La interfaz usa una paleta fintech oscura derivada de OpenDesign:
 
-| Uso | Color |
-|---|---|
-| Primario | `#281C59` |
+| Uso                 | Color     |
+| ------------------- | --------- |
+| Primario            | `#281C59` |
 | Secundario / acento | `#4E8D9C` |
 | Ingresos / positivo | `#85C79A` |
-| Lima / highlight | `#EDF7BD` |
-| Fondo | `#05060B` |
-| Cards | `#151621` |
+| Lima / highlight    | `#EDF7BD` |
+| Fondo               | `#05060B` |
+| Cards               | `#151621` |
 
 Los ingresos y egresos se diferencian con texto, signo y color para no depender solo del color.
 
