@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, typography } from '../../design/tokens';
@@ -14,6 +15,7 @@ const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 export function CashiTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
   const currentRoute = state.routes[state.index];
 
   if (!currentRoute || !mainRoutes.includes(currentRoute.name)) {
@@ -23,7 +25,7 @@ export function CashiTabBar({ state, descriptors, navigation }: BottomTabBarProp
   const visibleRoutes = state.routes.filter((route) => mainRoutes.includes(route.name));
 
   return (
-    <View style={styles.shell}>
+    <View style={[styles.shell, { bottom: Math.max(insets.bottom, 12) + 4 }]}>
       {visibleRoutes.map((route) => {
         const originalIndex = state.routes.findIndex((item) => item.key === route.key);
         const focused = state.index === originalIndex;
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 14,
     right: 14,
-    bottom: 14,
+    bottom: 16,
     height: 72,
     borderRadius: radius.lg,
     borderWidth: 1,

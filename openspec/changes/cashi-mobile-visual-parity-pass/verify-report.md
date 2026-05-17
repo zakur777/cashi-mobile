@@ -17,3 +17,5 @@ PASS
 - Balance now follows the OpenDesign hierarchy: mini income/expense stats are inside the main balance card.
 - Custom tab bar provides gradient active pill and real icons.
 - AppBackground exposes glow layers behind all tab and form screens.
+- Android status/safe-area overlap was addressed with `react-native-safe-area-context` on root, tab, login, and form screens.
+- Detail forms regained explicit back controls so users can return without relying on the bottom tab bar.

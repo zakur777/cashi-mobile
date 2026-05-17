@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TransactionForm } from '../../../src/components/transactions/TransactionForm';
 import { AppBackground } from '../../../src/components/ui/AppBackground';
@@ -67,6 +68,7 @@ export default function TransactionDetailScreen() {
           onChangeDescription={setDescription}
           onChangeDate={setDate}
           onChangeCategoryId={setCategoryId}
+          onCancel={() => router.back()}
           onSave={() => {
             void handleSubmit();
           }}

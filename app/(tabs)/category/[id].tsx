@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryForm } from '../../../src/components/categories/CategoryForm';
 import { AppBackground } from '../../../src/components/ui/AppBackground';
@@ -54,6 +55,7 @@ export default function CategoryDetailScreen() {
           onChangeName={setName}
           onChangeType={setType}
           onChangeColor={setColor}
+          onCancel={() => router.back()}
           onSave={() => {
             void handleSubmit();
           }}

@@ -11,7 +11,8 @@ interface AppBackgroundProps {
 export function AppBackground({ children }: AppBackgroundProps) {
   return (
     <View style={styles.container}>
-      <GradientSurface style={styles.baseGlow} colors={['#0A0B13', '#05060B', '#05060B']} />
+      <GradientSurface style={styles.baseGlow} colors={['#05060B', '#05060B', '#05060B']} />
+      <GradientSurface style={styles.topWash} colors={['#1B2D3D', '#202142', '#05060B']} />
       <View style={styles.tealGlow} />
       <View style={styles.purpleGlow} />
       {children}
@@ -22,24 +23,31 @@ export function AppBackground({ children }: AppBackgroundProps) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface, overflow: 'hidden' },
   baseGlow: { ...StyleSheet.absoluteFillObject },
+  topWash: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 190,
+  },
   tealGlow: {
     position: 'absolute',
-    top: -90,
-    right: -80,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
+    top: -42,
+    right: -48,
+    width: 190,
+    height: 190,
+    borderRadius: 95,
     backgroundColor: colors.secondary,
-    opacity: 0.18,
+    opacity: 0.24,
   },
   purpleGlow: {
     position: 'absolute',
-    top: 120,
+    top: 130,
     left: -120,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
     backgroundColor: colors.primary,
-    opacity: 0.34,
+    opacity: 0.4,
   },
 });

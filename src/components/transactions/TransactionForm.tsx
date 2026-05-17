@@ -26,6 +26,7 @@ interface TransactionFormProps {
   onChangeDescription: (value: string) => void;
   onChangeDate: (value: string) => void;
   onChangeCategoryId: (value: string) => void;
+  onCancel: () => void;
   onSave: () => void;
   onDelete?: () => void;
 }
@@ -47,6 +48,7 @@ export function TransactionForm(props: TransactionFormProps) {
     onChangeDescription,
     onChangeDate,
     onChangeCategoryId,
+    onCancel,
     onSave,
     onDelete,
   } = props;
@@ -57,6 +59,15 @@ export function TransactionForm(props: TransactionFormProps) {
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <View style={styles.topbar}>
+          <Pressable style={styles.backButton} onPress={onCancel} accessibilityRole="button" accessibilityLabel="Volver">
+            <Text style={styles.backButtonText}>‹</Text>
+          </Pressable>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>CLP</Text>
+          </View>
+        </View>
+
         <GradientSurface style={styles.heroCard} colors={['#281C59', '#151621', '#070811']}>
           <Text style={styles.kicker}>Movimiento</Text>
           <Text style={styles.title}>{title}</Text>
@@ -163,6 +174,28 @@ export function TransactionForm(props: TransactionFormProps) {
 const styles = StyleSheet.create({
   keyboardContainer: { flex: 1, backgroundColor: 'transparent' },
   container: { padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
+  topbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surfaceSoft,
+  },
+  backButtonText: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
+  badge: {
+    minHeight: 36,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+    backgroundColor: colors.surfaceSoft,
+  },
+  badgeText: { color: colors.lime, fontFamily: typography.bodyBold, fontSize: 12, fontWeight: '800' },
   heroCard: {
     borderRadius: radius.lg,
     borderWidth: 1,

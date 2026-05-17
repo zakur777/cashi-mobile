@@ -15,6 +15,7 @@ interface CategoryFormProps {
   onChangeName: (value: string) => void;
   onChangeType: (value: TransactionType) => void;
   onChangeColor: (value: CategoryColor) => void;
+  onCancel: () => void;
   onSave: () => void;
   onDelete?: () => void;
 }
@@ -30,6 +31,7 @@ export function CategoryForm({
   onChangeName,
   onChangeType,
   onChangeColor,
+  onCancel,
   onSave,
   onDelete,
 }: CategoryFormProps) {
@@ -39,6 +41,15 @@ export function CategoryForm({
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <View style={styles.topbar}>
+          <Pressable style={styles.backButton} onPress={onCancel} accessibilityRole="button" accessibilityLabel="Volver">
+            <Text style={styles.backButtonText}>‹</Text>
+          </Pressable>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>Local</Text>
+          </View>
+        </View>
+
         <GradientSurface style={styles.previewCard} colors={['#281C59', '#151621', '#070811']}>
           <View style={[styles.previewIcon, { backgroundColor: color }]} />
           <View>
@@ -115,6 +126,28 @@ export function CategoryForm({
 const styles = StyleSheet.create({
   keyboardContainer: { flex: 1, backgroundColor: 'transparent' },
   container: { flexGrow: 1, padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: 'transparent' },
+  topbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surfaceSoft,
+  },
+  backButtonText: { color: colors.textPrimary, fontSize: 32, lineHeight: 34 },
+  badge: {
+    minHeight: 36,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+    backgroundColor: colors.surfaceSoft,
+  },
+  badgeText: { color: colors.lime, fontFamily: typography.bodyBold, fontSize: 12, fontWeight: '800' },
   previewCard: {
     borderRadius: radius.lg,
     borderWidth: 1,
