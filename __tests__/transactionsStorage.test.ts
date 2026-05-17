@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import type { Transaction } from '../src/domain/types';
 import { transactionsStorage } from '../src/storage/transactionsStorage';
 import { STORAGE_KEYS } from '../src/storage/keys';
 
@@ -25,7 +26,7 @@ describe('transactionsStorage', () => {
   });
 
   it('returns parsed transactions when storage has data', async () => {
-    const stored = [
+    const stored: Transaction[] = [
       {
         id: 'tx-1',
         amount: 1200,
@@ -51,7 +52,7 @@ describe('transactionsStorage', () => {
   });
 
   it('persists transactions using transactions key', async () => {
-    const payload = [
+    const payload: Transaction[] = [
       {
         id: 'tx-2',
         amount: 300,
