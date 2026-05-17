@@ -5,6 +5,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GradientSurface } from '../ui/GradientSurface';
 import { colors, radius, typography } from '../../design/tokens';
 
+const mainRoutes = ['index', 'categories', 'balance'];
+
 const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
   index: 'list-outline',
   categories: 'grid-outline',
@@ -12,7 +14,13 @@ const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 export function CashiTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  const visibleRoutes = state.routes.filter((route) => (descriptors[route.key]?.options as { href?: unknown })?.href !== null);
+  const currentRoute = state.routes[state.index];
+
+  if (!currentRoute || !mainRoutes.includes(currentRoute.name)) {
+    return null;
+  }
+
+  const visibleRoutes = state.routes.filter((route) => mainRoutes.includes(route.name));
 
   return (
     <View style={styles.shell}>

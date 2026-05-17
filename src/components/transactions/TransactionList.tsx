@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
@@ -65,7 +66,13 @@ export function TransactionList({ transactions, onCreate, onEdit, onDelete }: Tr
         ListEmptyComponent={<Text style={styles.emptyText}>Todavía no hay transacciones.</Text>}
         renderItem={({ item }) => (
           <Pressable style={styles.card} onPress={() => onEdit(item.id)}>
-            <View style={[styles.iconBadge, { backgroundColor: item.categoryColor ?? colors.surfaceSoft }]} />
+            <View style={styles.iconBadge}>
+              <Ionicons
+                name={item.type === 'income' ? 'card-outline' : item.categoryName.toLowerCase().includes('comida') ? 'bag-outline' : 'briefcase-outline'}
+                size={18}
+                color={item.categoryColor ?? colors.lime}
+              />
+            </View>
             <View style={styles.cardContent}>
               <Text style={styles.description}>{item.description}</Text>
               <Text style={styles.meta}>{item.categoryName} · {item.date}</Text>
@@ -140,7 +147,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  iconBadge: { width: 46, height: 46, borderRadius: radius.sm, opacity: 0.45 },
+  iconBadge: {
+    width: 46,
+    height: 46,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.055)',
+  },
   cardContent: { flex: 1 },
   description: { fontFamily: typography.bodyBold, fontSize: 15, fontWeight: '800', color: colors.textPrimary },
   meta: { marginTop: 4, color: colors.textSecondary, fontFamily: typography.body, fontSize: 12 },

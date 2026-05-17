@@ -1,7 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { GradientSurface } from '../ui/GradientSurface';
-import { colors, radius, spacing, touchTarget, typography } from '../../design/tokens';
+import { colors, radius, spacing, typography } from '../../design/tokens';
 import { formatSignedCLP } from '../../domain/money';
 import type { Category, Transaction } from '../../domain/types';
 
@@ -31,10 +32,8 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
           <Text style={styles.kicker}>Organización</Text>
           <Text style={styles.title}>Categorías</Text>
         </View>
-        <Pressable style={styles.createButtonShell} onPress={onCreate}>
-          <GradientSurface style={styles.createButton}>
-            <Text style={styles.createButtonText}>Nueva categoría</Text>
-          </GradientSurface>
+        <Pressable style={styles.iconButton} onPress={onCreate}>
+          <Text style={styles.iconButtonText}>＋</Text>
         </Pressable>
       </View>
 
@@ -54,8 +53,14 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
         contentContainerStyle={categories.length === 0 ? styles.emptyContainer : styles.listContainer}
         ListEmptyComponent={<Text style={styles.emptyText}>Todavía no hay categorías.</Text>}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={[styles.iconBadge, { backgroundColor: item.color }]} />
+          <View style={[styles.card, { borderLeftColor: item.color }]}>
+            <View style={styles.iconBadge}>
+              <Ionicons
+                name={item.type === 'income' ? 'card-outline' : item.name.toLowerCase().includes('comida') ? 'bag-outline' : 'briefcase-outline'}
+                size={18}
+                color={item.color}
+              />
+            </View>
             <View style={styles.content}>
               <View style={styles.categoryHeader}>
                 <Text style={styles.name}>{item.name}</Text>
@@ -92,14 +97,17 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   title: { color: colors.textPrimary, fontFamily: typography.display, fontSize: 30, fontWeight: '800' },
-  createButtonShell: { borderRadius: radius.pill, overflow: 'hidden' },
-  createButton: {
-    borderRadius: radius.pill,
-    minHeight: touchTarget.minHeight,
-    paddingHorizontal: spacing.md,
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.surfaceSoft,
   },
-  createButtonText: { color: colors.textOnAccent, fontFamily: typography.bodyBold, fontWeight: '800', textAlign: 'center' },
+  iconButtonText: { color: colors.textPrimary, fontFamily: typography.bodyBold, fontSize: 26, lineHeight: 28 },
   summaryCard: {
     borderRadius: radius.md,
     borderWidth: 1,
@@ -120,6 +128,7 @@ const styles = StyleSheet.create({
   emptyText: { color: colors.textSecondary, fontSize: 16 },
   card: {
     borderWidth: 1,
+    borderLeftWidth: 3,
     borderColor: colors.border,
     borderRadius: radius.md,
     padding: spacing.sm,
@@ -129,7 +138,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  iconBadge: { width: 46, height: 46, borderRadius: radius.sm, opacity: 0.75 },
+  iconBadge: {
+    width: 46,
+    height: 46,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.055)',
+  },
   content: { flex: 1, gap: 4 },
   categoryHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap' },
   type: {

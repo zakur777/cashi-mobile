@@ -7,5 +7,6 @@
 - [x] 5. Verify typecheck, tests, and Android export.
 
 ## Remaining Limits
+
 - Exact OpenDesign typography still requires licensed `Aeonik Pro` / `Söhne` font assets.
 - Native gradients approximate CSS radial gradients/backdrop-filter.
