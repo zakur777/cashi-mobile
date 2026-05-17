@@ -31,9 +31,8 @@ describe('TransactionList', () => {
       />,
     );
 
-    expect(screen.getByText('-$540')).toBeTruthy();
-    expect(screen.getByText('Egreso')).toBeTruthy();
-    expect(screen.getByText('Categoría: Comida')).toBeTruthy();
+    expect(screen.getAllByText('-$540')).toHaveLength(2);
+    expect(screen.getByText('Comida · 2026-05-11')).toBeTruthy();
     expect(screen.getByText('Supermercado')).toBeTruthy();
   });
 
@@ -60,7 +59,7 @@ describe('TransactionList', () => {
       />,
     );
 
-    fireEvent.press(screen.getByText('Editar'));
+    fireEvent.press(screen.getByText('Freelance'));
     fireEvent.press(screen.getByText('Eliminar'));
 
     expect(onEdit).toHaveBeenCalledWith('tx-10');
@@ -87,7 +86,7 @@ describe('TransactionList', () => {
       />,
     );
 
-    expect(screen.getByText('+$99')).toBeTruthy();
-    expect(screen.getByText('Ingreso')).toBeTruthy();
+    expect(screen.getAllByText('+$99')).toHaveLength(2);
+    expect(screen.getByText('Varios · 2026-05-10')).toBeTruthy();
   });
 });

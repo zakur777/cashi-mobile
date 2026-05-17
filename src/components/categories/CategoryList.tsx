@@ -20,11 +20,30 @@ const getCategorySummary = (category: Category, transactions: Transaction[]) => 
 };
 
 export function CategoryList({ categories, transactions = [], onCreate, onEdit, onDelete }: CategoryListProps) {
+  const incomeCount = categories.filter((category) => category.type === 'income').length;
+  const expenseCount = categories.filter((category) => category.type === 'expense').length;
+
   return (
     <View style={styles.container}>
-      <Pressable style={styles.createButton} onPress={onCreate}>
-        <Text style={styles.createButtonText}>Nueva categoría</Text>
-      </Pressable>
+      <View style={styles.headerRow}>
+        <View>
+          <Text style={styles.kicker}>Organización</Text>
+          <Text style={styles.title}>Categorías</Text>
+        </View>
+        <Pressable style={styles.createButton} onPress={onCreate}>
+          <Text style={styles.createButtonText}>Nueva categoría</Text>
+        </Pressable>
+      </View>
+
+      {categories.length > 0 ? (
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryLabel}>Paleta Cashi activa</Text>
+          <Text style={styles.summaryText}>
+            {categories.length} categorías · {incomeCount} ingreso{incomeCount === 1 ? '' : 's'} · {expenseCount} egreso
+            {expenseCount === 1 ? '' : 's'}
+          </Text>
+        </View>
+      ) : null}
 
       <FlatList
         data={categories}
@@ -32,18 +51,22 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
         contentContainerStyle={categories.length === 0 ? styles.emptyContainer : styles.listContainer}
         ListEmptyComponent={<Text style={styles.emptyText}>Todavía no hay categorías.</Text>}
         renderItem={({ item }) => (
-          <View style={[styles.card, { borderLeftColor: item.color }]}> 
+          <View style={styles.card}>
             <View style={[styles.iconBadge, { backgroundColor: item.color }]} />
             <View style={styles.content}>
-              <Text style={styles.type}>{item.type === 'income' ? 'Ingreso' : 'Egreso'}</Text>
-              <Text style={styles.name}>{item.name}</Text>
+              <View style={styles.categoryHeader}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={[styles.type, item.type === 'income' ? styles.incomeType : styles.expenseType]}>
+                  {item.type === 'income' ? 'Ingreso' : 'Egreso'}
+                </Text>
+              </View>
               <Text style={styles.meta}>{getCategorySummary(item, transactions)}</Text>
             </View>
             <View style={styles.actionsColumn}>
-              <Pressable onPress={() => onEdit(item.id)}>
+              <Pressable onPress={() => onEdit(item.id)} hitSlop={8}>
                 <Text style={styles.editText}>Editar</Text>
               </Pressable>
-              <Pressable onPress={() => onDelete(item.id)}>
+              <Pressable onPress={() => onDelete(item.id)} hitSlop={8}>
                 <Text style={styles.deleteText}>Eliminar</Text>
               </Pressable>
             </View>
@@ -55,37 +78,59 @@ export function CategoryList({ categories, transactions = [], onCreate, onEdit, 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: spacing.md, backgroundColor: colors.surface },
+  container: { flex: 1, padding: spacing.md, paddingBottom: 96, backgroundColor: colors.surface },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
+  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
+  title: { color: colors.textPrimary, fontSize: 30, fontWeight: '800' },
   createButton: {
-    backgroundColor: colors.primary,
-    borderRadius: radius.sm,
+    backgroundColor: colors.secondary,
+    borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
     justifyContent: 'center',
   },
-  createButtonText: { color: colors.textOnPrimary, fontWeight: '600', textAlign: 'center' },
-  listContainer: { paddingBottom: spacing.md },
+  createButtonText: { color: colors.textOnAccent, fontWeight: '800', textAlign: 'center' },
+  summaryCard: {
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceCard,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+  },
+  summaryLabel: { color: colors.textSecondary, fontSize: 12, fontWeight: '800', textTransform: 'uppercase' },
+  summaryText: { color: colors.textPrimary, fontSize: 15, fontWeight: '700', marginTop: spacing.xs },
+  listContainer: { paddingBottom: spacing.xl },
   emptyContainer: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   emptyText: { color: colors.textSecondary, fontSize: 16 },
   card: {
     borderWidth: 1,
-    borderLeftWidth: 4,
     borderColor: colors.border,
     borderRadius: radius.md,
     padding: spacing.sm,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
     backgroundColor: colors.surfaceCard,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
   },
-  iconBadge: { width: 34, height: 34, borderRadius: radius.md, opacity: 0.8 },
-  content: { flex: 1 },
-  type: { color: colors.secondary, fontSize: 11, fontWeight: '700', textTransform: 'uppercase' },
-  name: { fontSize: 16, fontWeight: '700', color: colors.textPrimary },
-  meta: { color: colors.textSecondary, fontSize: 12, marginTop: 4 },
+  iconBadge: { width: 46, height: 46, borderRadius: radius.sm, opacity: 0.75 },
+  content: { flex: 1, gap: 4 },
+  categoryHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap' },
+  type: {
+    overflow: 'hidden',
+    borderRadius: radius.pill,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  incomeType: { color: colors.textOnAccent, backgroundColor: colors.success },
+  expenseType: { color: colors.danger, backgroundColor: colors.dangerSoft },
+  name: { fontSize: 17, fontWeight: '800', color: colors.textPrimary },
+  meta: { color: colors.textSecondary, fontSize: 12 },
   actionsColumn: { gap: spacing.xs, alignItems: 'flex-end' },
-  editText: { color: colors.secondary, fontWeight: '700' },
-  deleteText: { color: colors.danger, fontWeight: '700' },
+  editText: { color: colors.lime, fontWeight: '800', fontSize: 12 },
+  deleteText: { color: colors.danger, fontWeight: '800', fontSize: 12 },
 });

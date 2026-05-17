@@ -38,50 +38,62 @@ export function CategoryForm({
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Text style={styles.kicker}>Categoría</Text>
-        <Text style={styles.title}>{title}</Text>
-
-        <Text style={styles.label}>Nombre</Text>
-        <TextInput
-          value={name}
-          onChangeText={onChangeName}
-          placeholder="Ej: Comida"
-          style={[styles.input, error ? styles.inputError : undefined]}
-        />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-
-        <Text style={styles.label}>Tipo</Text>
-        <View style={styles.segmentedRow}>
-          <Pressable
-            style={[styles.segmentButton, type === 'income' ? styles.segmentButtonActive : undefined]}
-            onPress={() => onChangeType('income')}
-          >
-            <Text style={[styles.segmentText, type === 'income' ? styles.segmentTextActive : undefined]}>Ingreso</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.segmentButton, type === 'expense' ? styles.segmentButtonActive : undefined]}
-            onPress={() => onChangeType('expense')}
-          >
-            <Text style={[styles.segmentText, type === 'expense' ? styles.segmentTextActive : undefined]}>Egreso</Text>
-          </Pressable>
+        <View style={styles.previewCard}>
+          <View style={[styles.previewIcon, { backgroundColor: color }]} />
+          <View>
+            <Text style={styles.kicker}>Categoría</Text>
+            <Text style={styles.title}>{title}</Text>
+          </View>
         </View>
 
-        <Text style={styles.label}>Color</Text>
-        <View style={styles.paletteRow}>
-          {Object.values(CATEGORY_COLORS).map((item) => (
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Nombre</Text>
+          <TextInput
+            value={name}
+            onChangeText={onChangeName}
+            placeholder="Ej: Comida"
+            placeholderTextColor={colors.textMuted}
+            style={[styles.input, error ? styles.inputError : undefined]}
+          />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Tipo</Text>
+          <View style={styles.segmentedRow}>
             <Pressable
-              key={item}
-              accessibilityLabel={`Color ${item}`}
-              style={[
-                styles.colorSwatch,
-                { backgroundColor: item },
-                color === item ? styles.colorSwatchActive : undefined,
-              ]}
-              onPress={() => onChangeColor(item)}
-            />
-          ))}
+              style={[styles.segmentButton, type === 'income' ? styles.segmentButtonActive : undefined]}
+              onPress={() => onChangeType('income')}
+            >
+              <Text style={[styles.segmentText, type === 'income' ? styles.segmentTextActive : undefined]}>Ingreso</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.segmentButton, type === 'expense' ? styles.segmentButtonActive : undefined]}
+              onPress={() => onChangeType('expense')}
+            >
+              <Text style={[styles.segmentText, type === 'expense' ? styles.segmentTextActive : undefined]}>Egreso</Text>
+            </Pressable>
+          </View>
         </View>
-        <Text style={styles.helpText}>Paleta fija: morado, teal, verde éxito y lima suave.</Text>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Color</Text>
+          <View style={styles.paletteRow}>
+            {Object.values(CATEGORY_COLORS).map((item) => (
+              <Pressable
+                key={item}
+                accessibilityLabel={`Color ${item}`}
+                style={[
+                  styles.colorSwatch,
+                  { backgroundColor: item },
+                  color === item ? styles.colorSwatchActive : undefined,
+                ]}
+                onPress={() => onChangeColor(item)}
+              />
+            ))}
+          </View>
+          <Text style={styles.helpText}>Paleta fija Cashi para reconocer ingresos y egresos al vuelo.</Text>
+        </View>
 
         <Pressable style={styles.saveButton} onPress={onSave} disabled={loading}>
           <Text style={styles.saveText}>{loading ? 'Guardando...' : saveLabel}</Text>
@@ -99,31 +111,42 @@ export function CategoryForm({
 
 const styles = StyleSheet.create({
   keyboardContainer: { flex: 1, backgroundColor: colors.surface },
-  container: { flexGrow: 1, padding: spacing.md, paddingBottom: spacing.xl, backgroundColor: colors.surface },
-  kicker: { color: colors.secondary, fontSize: 12, fontWeight: '700', letterSpacing: 1.2, textTransform: 'uppercase' },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: spacing.lg, color: colors.textPrimary },
-  label: { fontSize: 14, fontWeight: '600', marginBottom: spacing.xs, color: colors.textPrimary },
+  container: { flexGrow: 1, padding: spacing.md, paddingBottom: 96, gap: spacing.md, backgroundColor: colors.surface },
+  previewCard: {
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceCard,
+    padding: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  previewIcon: { width: 56, height: 56, borderRadius: radius.md, opacity: 0.85 },
+  kicker: { color: colors.lime, fontSize: 12, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' },
+  title: { fontSize: 24, fontWeight: '800', color: colors.textPrimary },
+  fieldGroup: { gap: spacing.xs },
+  label: { fontSize: 13, fontWeight: '800', color: colors.textSecondary, textTransform: 'uppercase' },
   input: {
+    minHeight: 52,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     fontSize: 16,
     color: colors.textPrimary,
-    backgroundColor: colors.surfaceCard,
+    backgroundColor: colors.surfaceSoft,
   },
   inputError: { borderColor: colors.danger },
-  error: { color: colors.danger, marginTop: 6, marginBottom: 10 },
+  error: { color: colors.danger, marginTop: 2 },
   segmentedRow: {
     flexDirection: 'row',
     gap: spacing.xs,
     padding: 4,
     borderRadius: radius.md,
-    backgroundColor: colors.surfaceCard,
+    backgroundColor: colors.surfaceSoft,
     borderWidth: 1,
     borderColor: colors.border,
-    marginBottom: spacing.md,
   },
   segmentButton: {
     flex: 1,
@@ -132,10 +155,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  segmentButtonActive: { backgroundColor: colors.primary },
-  segmentText: { color: colors.textSecondary, fontWeight: '700' },
-  segmentTextActive: { color: colors.textOnPrimary },
-  paletteRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.xs },
+  segmentButtonActive: { backgroundColor: colors.secondary },
+  segmentText: { color: colors.textSecondary, fontWeight: '800' },
+  segmentTextActive: { color: colors.textOnAccent },
+  paletteRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
   colorSwatch: {
     width: touchTarget.minHeight,
     height: touchTarget.minHeight,
@@ -143,22 +166,23 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.border,
   },
-  colorSwatchActive: { borderColor: colors.primary, transform: [{ scale: 1.08 }] },
-  helpText: { color: colors.textSecondary, fontSize: 12, marginBottom: spacing.md },
+  colorSwatchActive: { borderColor: colors.lime, transform: [{ scale: 1.08 }] },
+  helpText: { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
   saveButton: {
-    marginTop: 18,
-    backgroundColor: colors.primary,
-    borderRadius: radius.sm,
+    marginTop: spacing.sm,
+    backgroundColor: colors.secondary,
+    borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
   },
-  saveText: { color: colors.textOnPrimary, textAlign: 'center', fontWeight: '600' },
+  saveText: { color: colors.textOnAccent, textAlign: 'center', fontWeight: '800' },
   deleteButton: {
-    marginTop: 12,
-    backgroundColor: colors.danger,
-    borderRadius: radius.sm,
+    backgroundColor: colors.dangerSoft,
+    borderWidth: 1,
+    borderColor: colors.danger,
+    borderRadius: radius.pill,
     minHeight: touchTarget.minHeight,
     justifyContent: 'center',
   },
-  deleteText: { color: colors.textOnPrimary, textAlign: 'center', fontWeight: '600' },
+  deleteText: { color: colors.danger, textAlign: 'center', fontWeight: '800' },
 });
