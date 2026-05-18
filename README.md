@@ -1,6 +1,6 @@
 # Cashi Mobile
 
-**Cashi Mobile** es una app de finanzas personales creada con **React Native + Expo + TypeScript**. Permite iniciar sesión, gestionar categorías, registrar ingresos/egresos y consultar un balance financiero persistido localmente con **AsyncStorage**.
+**Cashi Mobile** es una app de finanzas personales creada con **React Native + Expo + TypeScript**. Permite iniciar sesión, gestionar categorías, registrar ingresos/egresos y consultar un balance financiero. Por defecto usa persistencia local con **AsyncStorage**, y también puede conectarse de forma opt-in al backend Cashi.
 
 La app está optimizada para validación **Android-first** con Expo Go/emulador.
 
@@ -13,7 +13,8 @@ La app está optimizada para validación **Android-first** con Expo Go/emulador.
 - Selección de categoría al crear/editar transacciones.
 - Balance con total de ingresos, total de egresos, saldo final y **Categoría principal**.
 - Montos en pesos chilenos CLP: `$1.250.000`, sin decimales y con punto de miles.
-- Persistencia local con AsyncStorage.
+- Persistencia local con AsyncStorage por defecto.
+- Integración opt-in con backend Cashi para categorías, transacciones y balance.
 - Validación de formularios con Zod y errores por campo.
 - Navegación con Expo Router y tabs.
 - UI Android-first basada en referencia OpenDesign, con tokens, gradientes e Inter como tipografía disponible.
@@ -25,7 +26,7 @@ La app está optimizada para validación **Android-first** con Expo Go/emulador.
 | Mobile       | React Native + Expo                             |
 | Lenguaje     | TypeScript                                      |
 | Navegación   | Expo Router                                     |
-| Persistencia | AsyncStorage                                    |
+| Persistencia | AsyncStorage local + backend opt-in             |
 | Validación   | Zod                                             |
 | UI           | Tokens propios + `expo-linear-gradient` + Inter |
 | Testing      | Jest + jest-expo + Testing Library              |
@@ -58,6 +59,69 @@ Credenciales demo:
 Email: demo@cashi.com
 Password: Cashi1234
 ```
+
+## Ejecutar contra el backend Cashi
+
+La app mantiene modo local por defecto. Para usar el backend hay que iniciar Expo con variables públicas de entorno.
+
+Backend esperado para emulador Android:
+
+```txt
+http://127.0.0.1:3000
+```
+
+Usamos `127.0.0.1` porque se recomienda abrir un reverse del puerto 3000 con ADB:
+
+```bash
+adb reverse tcp:3000 tcp:3000
+```
+
+### CMD de Windows
+
+```bat
+set EXPO_PUBLIC_CASHI_DATA_SOURCE=backend
+set EXPO_PUBLIC_CASHI_API_BASE_URL=http://127.0.0.1:3000
+npx expo start --clear
+```
+
+### PowerShell
+
+```powershell
+$env:EXPO_PUBLIC_CASHI_DATA_SOURCE="backend"
+$env:EXPO_PUBLIC_CASHI_API_BASE_URL="http://127.0.0.1:3000"
+npx expo start --clear
+```
+
+### Android emulator / Expo Go
+
+Con el emulador abierto:
+
+```bash
+adb reverse tcp:8081 tcp:8081
+adb reverse tcp:3000 tcp:3000
+adb shell am force-stop host.exp.exponent
+adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081"
+```
+
+Credenciales de login de la app:
+
+```txt
+Email: demo@cashi.com
+Password: Cashi1234
+```
+
+> El backend no tiene autenticación todavía. El login sigue siendo demo local; el backend se usa para categorías, transacciones y balance.
+
+Si las tablas del backend están recién migradas, es normal ver categorías, movimientos y balance vacíos hasta crear datos desde la app.
+
+### Mensajes de error de backend
+
+El front traduce errores técnicos a mensajes amigables. Ejemplos:
+
+- Backend apagado: `No se pudo conectar con el servidor. Revisá que el backend esté activo.`
+- URL/config faltante: `La conexión con el backend no está configurada correctamente.`
+- Validación: `Revisá los datos ingresados e intentá nuevamente.`
+- Duplicado: `Ya existe un registro con esos datos.`
 
 ## Problema conocido: Expo Go queda negro o no carga en emulador
 
@@ -150,7 +214,7 @@ __tests__/        # pruebas unitarias y de componentes
 - `useTransactionForm` maneja validación y estado del formulario de transacciones.
 - El balance se calcula en el hook, no en la pantalla.
 - `Category.type` define si la categoría es de ingreso o egreso.
-- `Category.color` usa una paleta fija Cashi.
+- `Category.color` usa una paleta fija Cashi de 12 colores visibles sobre fondo oscuro.
 - “Categoría principal” es la categoría de egreso con mayor gasto total.
 
 ## Modelo de datos
@@ -188,7 +252,9 @@ Los datos se guardan localmente con una key por entidad:
 | Categorías    | `categories`   |
 | Transacciones | `transactions` |
 
-La app usa el patrón **read-modify-write**: leer datos actuales, modificar en memoria y guardar el arreglo completo nuevamente.
+La app usa el patrón **read-modify-write** en modo local: leer datos actuales, modificar en memoria y guardar el arreglo completo nuevamente.
+
+En modo backend, `useCategories` y `useTransactions` resuelven repositorios HTTP mediante `EXPO_PUBLIC_CASHI_DATA_SOURCE=backend` y `EXPO_PUBLIC_CASHI_API_BASE_URL`.
 
 ## Validación
 
