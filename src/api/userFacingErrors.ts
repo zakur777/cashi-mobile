@@ -24,11 +24,12 @@ export function getUserFacingErrorMessage(
 	}
 
 	if (error.error.kind === "http") {
-		if (
-			error.error.code === "bad_request" ||
-			error.error.code === "unprocessable_entity"
-		) {
+		if (error.error.code === "bad_request") {
 			return "Revisá los datos ingresados e intentá nuevamente.";
+		}
+
+		if (error.error.code === "unprocessable_entity") {
+			return "No se pudo completar porque el registro está relacionado con otros datos.";
 		}
 
 		if (error.error.code === "conflict") {

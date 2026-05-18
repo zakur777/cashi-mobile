@@ -1,5 +1,5 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -15,14 +15,23 @@ export default function TransactionDetailScreen() {
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
 
-	const { categories, error: categoryError } = useCategories();
+	const { categories, error: categoryError, refresh: refreshCategories } =
+		useCategories();
 	const {
 		transactions,
 		error: transactionError,
 		createTransaction,
 		updateTransaction,
 		deleteTransaction,
+		refresh: refreshTransactions,
 	} = useTransactions({ categories });
+
+	useFocusEffect(
+		useCallback(() => {
+			void refreshCategories();
+			void refreshTransactions();
+		}, [refreshCategories, refreshTransactions]),
+	);
 
 	const isNew = id === "new";
 	const current = useMemo(
