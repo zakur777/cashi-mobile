@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { getUserFacingErrorMessage } from "../api/userFacingErrors";
 import {
 	CATEGORY_COLORS,
 	type Category,
@@ -46,8 +47,13 @@ export function useTransactions({
 			const items = await getRepository().getAll();
 			setTransactions(items);
 			setError(null);
-		} catch {
-			setError("No se pudieron cargar las transacciones");
+		} catch (cause) {
+			setError(
+				getUserFacingErrorMessage(
+					cause,
+					"No se pudieron cargar las transacciones. Intentá nuevamente.",
+				),
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -64,7 +70,12 @@ export function useTransactions({
 				setTransactions((current) => [...current, created]);
 				setError(null);
 			} catch (cause) {
-				setError("No se pudo guardar la transacción");
+				setError(
+					getUserFacingErrorMessage(
+						cause,
+						"No se pudo guardar la transacción. Intentá nuevamente.",
+					),
+				);
 				throw cause;
 			}
 		},
@@ -80,7 +91,12 @@ export function useTransactions({
 				);
 				setError(null);
 			} catch (cause) {
-				setError("No se pudo guardar la transacción");
+				setError(
+					getUserFacingErrorMessage(
+						cause,
+						"No se pudo guardar la transacción. Intentá nuevamente.",
+					),
+				);
 				throw cause;
 			}
 		},
@@ -94,7 +110,12 @@ export function useTransactions({
 				setTransactions((current) => current.filter((item) => item.id !== id));
 				setError(null);
 			} catch (cause) {
-				setError("No se pudo eliminar la transacción");
+				setError(
+					getUserFacingErrorMessage(
+						cause,
+						"No se pudo eliminar la transacción. Intentá nuevamente.",
+					),
+				);
 				throw cause;
 			}
 		},

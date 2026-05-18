@@ -272,7 +272,7 @@ describe("useTransactions", () => {
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		expect(result.current.error).toBe(
-			"No se pudieron cargar las transacciones",
+			"La conexión con el backend no está configurada correctamente.",
 		);
 		expect(result.current.transactions).toEqual([]);
 	});
@@ -301,13 +301,17 @@ describe("useTransactions", () => {
 				}),
 			).rejects.toThrow("create failed");
 		});
-		expect(result.current.error).toBe("No se pudo guardar la transacción");
+		expect(result.current.error).toBe(
+			"No se pudo guardar la transacción. Intentá nuevamente.",
+		);
 
 		await act(async () => {
 			await expect(result.current.deleteTransaction("tx-1")).rejects.toThrow(
 				"delete failed",
 			);
 		});
-		expect(result.current.error).toBe("No se pudo eliminar la transacción");
+		expect(result.current.error).toBe(
+			"No se pudo eliminar la transacción. Intentá nuevamente.",
+		);
 	});
 });

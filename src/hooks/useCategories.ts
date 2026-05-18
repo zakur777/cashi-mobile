@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { getUserFacingErrorMessage } from "../api/userFacingErrors";
 import type { Category, CategoryInput } from "../domain/types";
 import {
 	createBackendCategoryRepository,
@@ -39,8 +40,13 @@ export function useCategories({
 			const items = await getRepository().getAll();
 			setCategories(items);
 			setError(null);
-		} catch {
-			setError("No se pudieron cargar las categorías");
+		} catch (cause) {
+			setError(
+				getUserFacingErrorMessage(
+					cause,
+					"No se pudieron cargar las categorías. Intentá nuevamente.",
+				),
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -57,7 +63,12 @@ export function useCategories({
 				setCategories((current) => [...current, created]);
 				setError(null);
 			} catch (cause) {
-				setError("No se pudo guardar la categoría");
+				setError(
+					getUserFacingErrorMessage(
+						cause,
+						"No se pudo guardar la categoría. Intentá nuevamente.",
+					),
+				);
 				throw cause;
 			}
 		},
@@ -73,7 +84,12 @@ export function useCategories({
 				);
 				setError(null);
 			} catch (cause) {
-				setError("No se pudo guardar la categoría");
+				setError(
+					getUserFacingErrorMessage(
+						cause,
+						"No se pudo guardar la categoría. Intentá nuevamente.",
+					),
+				);
 				throw cause;
 			}
 		},
@@ -87,7 +103,12 @@ export function useCategories({
 				setCategories((current) => current.filter((item) => item.id !== id));
 				setError(null);
 			} catch (cause) {
-				setError("No se pudo eliminar la categoría");
+				setError(
+					getUserFacingErrorMessage(
+						cause,
+						"No se pudo eliminar la categoría. Intentá nuevamente.",
+					),
+				);
 				throw cause;
 			}
 		},

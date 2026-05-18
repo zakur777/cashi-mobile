@@ -12,8 +12,13 @@ import { useCategoryForm } from "../../../src/hooks/useCategoryForm";
 export default function CategoryDetailScreen() {
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const { categories, createCategory, updateCategory, deleteCategory } =
-		useCategories();
+	const {
+		categories,
+		error: categoryError,
+		createCategory,
+		updateCategory,
+		deleteCategory,
+	} = useCategories();
 
 	const isNew = id === "new";
 
@@ -29,7 +34,9 @@ export default function CategoryDetailScreen() {
 		setType,
 		color,
 		setColor,
+		resetForm,
 		errors,
+		formError,
 		submitting,
 		handleSubmit,
 	} = useCategoryForm({
@@ -44,17 +51,22 @@ export default function CategoryDetailScreen() {
 			if (id) {
 				await updateCategory(id, validCategory);
 			}
-			router.back();
+			router.replace("/(tabs)/categories");
 		},
 	});
 
 	useEffect(() => {
-		if (!isNew && current) {
+		if (isNew) {
+			resetForm();
+			return;
+		}
+
+		if (current) {
 			setName(current.name);
 			setType(current.type ?? "expense");
 			setColor(current.color ?? CATEGORY_COLORS.lime);
 		}
-	}, [current, isNew, setColor, setName, setType]);
+	}, [current, isNew, resetForm, setColor, setName, setType]);
 
 	return (
 		<AppBackground>
@@ -65,6 +77,7 @@ export default function CategoryDetailScreen() {
 					type={type}
 					color={color}
 					error={errors.name}
+					formError={formError ?? categoryError}
 					loading={submitting}
 					saveLabel={isNew ? "Crear categoría" : "Guardar cambios"}
 					onChangeName={setName}
@@ -77,7 +90,9 @@ export default function CategoryDetailScreen() {
 					onDelete={
 						!isNew && id
 							? () => {
-									void deleteCategory(id).then(() => router.back());
+									void deleteCategory(id)
+										.then(() => router.replace("/(tabs)/categories"))
+										.catch(() => {});
 								}
 							: undefined
 					}

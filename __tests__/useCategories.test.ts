@@ -177,7 +177,9 @@ describe("useCategories", () => {
 
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
-		expect(result.current.error).toBe("No se pudieron cargar las categorías");
+		expect(result.current.error).toBe(
+			"La conexión con el backend no está configurada correctamente.",
+		);
 		expect(result.current.categories).toEqual([]);
 	});
 
@@ -201,13 +203,17 @@ describe("useCategories", () => {
 				}),
 			).rejects.toThrow("create failed");
 		});
-		expect(result.current.error).toBe("No se pudo guardar la categoría");
+		expect(result.current.error).toBe(
+			"No se pudo guardar la categoría. Intentá nuevamente.",
+		);
 
 		await act(async () => {
 			await expect(result.current.deleteCategory("cat-1")).rejects.toThrow(
 				"delete failed",
 			);
 		});
-		expect(result.current.error).toBe("No se pudo eliminar la categoría");
+		expect(result.current.error).toBe(
+			"No se pudo eliminar la categoría. Intentá nuevamente.",
+		);
 	});
 });
