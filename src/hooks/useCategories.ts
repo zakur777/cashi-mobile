@@ -1,74 +1,106 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
-import { CATEGORY_COLORS, type Category, type CategoryInput } from '../domain/types';
-import { categoriesStorage } from '../storage/categoriesStorage';
-import { seedDemoDataIfEmpty } from '../storage/demoSeed';
+import type { Category, CategoryInput } from "../domain/types";
+import {
+	createBackendCategoryRepository,
+	localCategoryRepository,
+	resolveCashiDataSource,
+	type CashiDataSource,
+	type CategoryRepository,
+} from "../repositories";
 
-const normalizeCategory = (category: Category): Category => ({
-  ...category,
-  type: category.type ?? 'expense',
-  color: category.color ?? CATEGORY_COLORS.lime,
-});
+interface UseCategoriesOptions {
+	repository?: CategoryRepository;
+	dataSource?: CashiDataSource;
+}
 
-const buildCategory = (input: CategoryInput): Category => ({
-  id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-  ...input,
-  name: input.name.trim(),
-});
+export function useCategories({
+	repository,
+	dataSource,
+}: UseCategoriesOptions = {}) {
+	const [categories, setCategories] = useState<Category[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-export function useCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+	const getRepository = useCallback(() => {
+		if (repository) {
+			return repository;
+		}
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      await seedDemoDataIfEmpty();
-      const items = await categoriesStorage.getAll();
-      setCategories(items.map(normalizeCategory));
-      setError(null);
-    } catch {
-      setError('No se pudieron cargar las categorías');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+		const resolvedSource = resolveCashiDataSource({ dataSource });
+		return resolvedSource === "backend"
+			? createBackendCategoryRepository()
+			: localCategoryRepository;
+	}, [dataSource, repository]);
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+	const refresh = useCallback(async () => {
+		setLoading(true);
+		try {
+			const items = await getRepository().getAll();
+			setCategories(items);
+			setError(null);
+		} catch {
+			setError("No se pudieron cargar las categorías");
+		} finally {
+			setLoading(false);
+		}
+	}, [getRepository]);
 
-  const createCategory = useCallback(async (input: CategoryInput) => {
-    const next = [...categories, buildCategory(input)];
-    await categoriesStorage.saveAll(next);
-    setCategories(next);
-    setError(null);
-  }, [categories]);
+	useEffect(() => {
+		void refresh();
+	}, [refresh]);
 
-  const updateCategory = useCallback(async (id: string, input: CategoryInput) => {
-    const next = categories.map((item) =>
-      item.id === id ? { ...item, ...input, name: input.name.trim() } : item,
-    );
-    await categoriesStorage.saveAll(next);
-    setCategories(next);
-    setError(null);
-  }, [categories]);
+	const createCategory = useCallback(
+		async (input: CategoryInput) => {
+			try {
+				const created = await getRepository().create(input);
+				setCategories((current) => [...current, created]);
+				setError(null);
+			} catch (cause) {
+				setError("No se pudo guardar la categoría");
+				throw cause;
+			}
+		},
+		[getRepository],
+	);
 
-  const deleteCategory = useCallback(async (id: string) => {
-    const next = categories.filter((item) => item.id !== id);
-    await categoriesStorage.saveAll(next);
-    setCategories(next);
-    setError(null);
-  }, [categories]);
+	const updateCategory = useCallback(
+		async (id: string, input: CategoryInput) => {
+			try {
+				const updated = await getRepository().update(id, input);
+				setCategories((current) =>
+					current.map((item) => (item.id === id ? updated : item)),
+				);
+				setError(null);
+			} catch (cause) {
+				setError("No se pudo guardar la categoría");
+				throw cause;
+			}
+		},
+		[getRepository],
+	);
 
-  return {
-    categories,
-    loading,
-    error,
-    refresh,
-    createCategory,
-    updateCategory,
-    deleteCategory,
-  };
+	const deleteCategory = useCallback(
+		async (id: string) => {
+			try {
+				await getRepository().delete(id);
+				setCategories((current) => current.filter((item) => item.id !== id));
+				setError(null);
+			} catch (cause) {
+				setError("No se pudo eliminar la categoría");
+				throw cause;
+			}
+		},
+		[getRepository],
+	);
+
+	return {
+		categories,
+		loading,
+		error,
+		refresh,
+		createCategory,
+		updateCategory,
+		deleteCategory,
+	};
 }

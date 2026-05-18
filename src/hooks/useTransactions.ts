@@ -1,140 +1,187 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { CATEGORY_COLORS, type Category, type Transaction, type TransactionType } from '../domain/types';
-import { seedDemoDataIfEmpty } from '../storage/demoSeed';
-import { transactionsStorage } from '../storage/transactionsStorage';
-
-interface TransactionInput {
-  amount: number;
-  type: TransactionType;
-  description: string;
-  date: string;
-  categoryId: string;
-}
+import {
+	CATEGORY_COLORS,
+	type Category,
+	type Transaction,
+} from "../domain/types";
+import {
+	createBackendTransactionRepository,
+	localTransactionRepository,
+	resolveCashiDataSource,
+	type CashiDataSource,
+	type TransactionInput,
+	type TransactionRepository,
+} from "../repositories";
 
 interface UseTransactionsOptions {
-  categories?: Category[];
+	categories?: Category[];
+	repository?: TransactionRepository;
+	dataSource?: CashiDataSource;
 }
 
-const buildTransaction = (input: TransactionInput): Transaction => ({
-  id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-  ...input,
-});
+export function useTransactions({
+	categories = [],
+	repository,
+	dataSource,
+}: UseTransactionsOptions = {}) {
+	const [transactions, setTransactions] = useState<Transaction[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-export function useTransactions({ categories = [] }: UseTransactionsOptions = {}) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+	const getRepository = useCallback(() => {
+		if (repository) {
+			return repository;
+		}
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      await seedDemoDataIfEmpty();
-      const items = await transactionsStorage.getAll();
-      setTransactions(items);
-      setError(null);
-    } catch {
-      setError('No se pudieron cargar las transacciones');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+		const resolvedSource = resolveCashiDataSource({ dataSource });
+		return resolvedSource === "backend"
+			? createBackendTransactionRepository()
+			: localTransactionRepository;
+	}, [dataSource, repository]);
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+	const refresh = useCallback(async () => {
+		setLoading(true);
+		try {
+			const items = await getRepository().getAll();
+			setTransactions(items);
+			setError(null);
+		} catch {
+			setError("No se pudieron cargar las transacciones");
+		} finally {
+			setLoading(false);
+		}
+	}, [getRepository]);
 
-  const createTransaction = useCallback(async (input: TransactionInput) => {
-    const next = [...transactions, buildTransaction(input)];
-    await transactionsStorage.saveAll(next);
-    setTransactions(next);
-    setError(null);
-  }, [transactions]);
+	useEffect(() => {
+		void refresh();
+	}, [refresh]);
 
-  const updateTransaction = useCallback(async (id: string, input: TransactionInput) => {
-    const next = transactions.map((item) => (item.id === id ? { ...item, ...input } : item));
-    await transactionsStorage.saveAll(next);
-    setTransactions(next);
-    setError(null);
-  }, [transactions]);
+	const createTransaction = useCallback(
+		async (input: TransactionInput) => {
+			try {
+				const created = await getRepository().create(input);
+				setTransactions((current) => [...current, created]);
+				setError(null);
+			} catch (cause) {
+				setError("No se pudo guardar la transacción");
+				throw cause;
+			}
+		},
+		[getRepository],
+	);
 
-  const deleteTransaction = useCallback(async (id: string) => {
-    const next = transactions.filter((item) => item.id !== id);
-    await transactionsStorage.saveAll(next);
-    setTransactions(next);
-    setError(null);
-  }, [transactions]);
+	const updateTransaction = useCallback(
+		async (id: string, input: TransactionInput) => {
+			try {
+				const updated = await getRepository().update(id, input);
+				setTransactions((current) =>
+					current.map((item) => (item.id === id ? updated : item)),
+				);
+				setError(null);
+			} catch (cause) {
+				setError("No se pudo guardar la transacción");
+				throw cause;
+			}
+		},
+		[getRepository],
+	);
 
-  const transactionsWithCategory = useMemo(
-    () =>
-      transactions.map((transaction) => {
-        const category = categories.find((item) => item.id === transaction.categoryId);
+	const deleteTransaction = useCallback(
+		async (id: string) => {
+			try {
+				await getRepository().delete(id);
+				setTransactions((current) => current.filter((item) => item.id !== id));
+				setError(null);
+			} catch (cause) {
+				setError("No se pudo eliminar la transacción");
+				throw cause;
+			}
+		},
+		[getRepository],
+	);
 
-        return {
-          ...transaction,
-          categoryName: category?.name ?? 'Sin categoría',
-          categoryColor: category?.color ?? CATEGORY_COLORS.lime,
-        };
-      }),
-    [categories, transactions],
-  );
+	const transactionsWithCategory = useMemo(
+		() =>
+			transactions.map((transaction) => {
+				const category = categories.find(
+					(item) => item.id === transaction.categoryId,
+				);
 
-  const { totalIncome, totalExpense, balance, primaryExpenseCategory } = useMemo(() => {
-    const income = transactions.reduce((acc, transaction) => {
-      if (transaction.type !== 'income') {
-        return acc;
-      }
+				return {
+					...transaction,
+					categoryName: category?.name ?? "Sin categoría",
+					categoryColor: category?.color ?? CATEGORY_COLORS.lime,
+				};
+			}),
+		[categories, transactions],
+	);
 
-      return acc + transaction.amount;
-    }, 0);
+	const { totalIncome, totalExpense, balance, primaryExpenseCategory } =
+		useMemo(() => {
+			const income = transactions.reduce((acc, transaction) => {
+				if (transaction.type !== "income") {
+					return acc;
+				}
 
-    const expense = transactions.reduce((acc, transaction) => {
-      if (transaction.type !== 'expense') {
-        return acc;
-      }
+				return acc + transaction.amount;
+			}, 0);
 
-      return acc + transaction.amount;
-    }, 0);
+			const expense = transactions.reduce((acc, transaction) => {
+				if (transaction.type !== "expense") {
+					return acc;
+				}
 
-    const expenseByCategory = transactions.reduce<Record<string, number>>((acc, transaction) => {
-      if (transaction.type !== 'expense') {
-        return acc;
-      }
+				return acc + transaction.amount;
+			}, 0);
 
-      acc[transaction.categoryId] = (acc[transaction.categoryId] ?? 0) + transaction.amount;
-      return acc;
-    }, {});
+			const expenseByCategory = transactions.reduce<Record<string, number>>(
+				(acc, transaction) => {
+					if (transaction.type !== "expense") {
+						return acc;
+					}
 
-    const [primaryCategoryId, primaryAmount] = Object.entries(expenseByCategory).sort((a, b) => b[1] - a[1])[0] ?? [];
-    const primaryCategory = categories.find((category) => category.id === primaryCategoryId);
+					acc[transaction.categoryId] =
+						(acc[transaction.categoryId] ?? 0) + transaction.amount;
+					return acc;
+				},
+				{},
+			);
 
-    return {
-      totalIncome: income,
-      totalExpense: expense,
-      balance: income - expense,
-      primaryExpenseCategory: primaryCategoryId && primaryAmount
-        ? {
-            id: primaryCategoryId,
-            name: primaryCategory?.name ?? 'Sin categoría',
-            color: primaryCategory?.color ?? CATEGORY_COLORS.lime,
-            amount: primaryAmount,
-          }
-        : null,
-    };
-  }, [categories, transactions]);
+			const [primaryCategoryId, primaryAmount] =
+				Object.entries(expenseByCategory).sort((a, b) => b[1] - a[1])[0] ?? [];
+			const primaryCategory = categories.find(
+				(category) => category.id === primaryCategoryId,
+			);
 
-  return {
-    transactions,
-    transactionsWithCategory,
-    loading,
-    error,
-    totalIncome,
-    totalExpense,
-    balance,
-    primaryExpenseCategory,
-    refresh,
-    createTransaction,
-    updateTransaction,
-    deleteTransaction,
-  };
+			return {
+				totalIncome: income,
+				totalExpense: expense,
+				balance: income - expense,
+				primaryExpenseCategory:
+					primaryCategoryId && primaryAmount
+						? {
+								id: primaryCategoryId,
+								name: primaryCategory?.name ?? "Sin categoría",
+								color: primaryCategory?.color ?? CATEGORY_COLORS.lime,
+								amount: primaryAmount,
+							}
+						: null,
+			};
+		}, [categories, transactions]);
+
+	return {
+		transactions,
+		transactionsWithCategory,
+		loading,
+		error,
+		totalIncome,
+		totalExpense,
+		balance,
+		primaryExpenseCategory,
+		refresh,
+		createTransaction,
+		updateTransaction,
+		deleteTransaction,
+	};
 }
