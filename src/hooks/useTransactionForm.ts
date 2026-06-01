@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { getUserFacingErrorMessage } from "../api/userFacingErrors";
-import type { TransactionType } from "../domain/types";
+import type { TransactionMetadataInput, TransactionType } from "../domain/types";
 import { transactionSchema } from "../domain/schemas";
 
 interface TransactionFormValues {
@@ -14,12 +14,15 @@ interface TransactionFormValues {
 
 interface UseTransactionFormOptions {
 	initialValues: TransactionFormValues;
+	metadata?: TransactionMetadataInput;
 	onSubmit: (values: {
 		amount: number;
 		type: TransactionType;
 		description: string;
 		date: string;
 		categoryId: string;
+		photoUri?: string;
+		location?: TransactionMetadataInput["location"];
 	}) => Promise<void>;
 }
 
@@ -33,6 +36,7 @@ interface TransactionFormErrors {
 
 export function useTransactionForm({
 	initialValues,
+	metadata,
 	onSubmit,
 }: UseTransactionFormOptions) {
 	const [amount, setAmountValue] = useState(initialValues.amount);
@@ -83,6 +87,8 @@ export function useTransactionForm({
 			description,
 			date,
 			categoryId,
+			...(metadata?.photoUri ? { photoUri: metadata.photoUri } : {}),
+			...(metadata?.location ? { location: metadata.location } : {}),
 		});
 
 		if (!parsed.success) {
@@ -109,7 +115,7 @@ export function useTransactionForm({
 		} finally {
 			setSubmitting(false);
 		}
-	}, [amount, categoryId, date, description, onSubmit, type]);
+	}, [amount, categoryId, date, description, metadata, onSubmit, type]);
 
 	return {
 		amount,

@@ -5,9 +5,37 @@
     "scheme": "cashi",
     "version": "1.0.0",
     "orientation": "portrait",
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cashi uses the camera to attach a receipt photo to a transaction.",
+        "NSPhotoLibraryUsageDescription": "Cashi uses the photo library to attach an existing receipt photo to a transaction.",
+        "NSLocationWhenInUseUsageDescription": "Cashi uses your location to attach optional coordinates to a transaction."
+      }
+    },
+    "android": {
+      "permissions": [
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Cashi uses the photo library to attach an existing receipt photo to a transaction.",
+          "cameraPermission": "Cashi uses the camera to attach a receipt photo to a transaction."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Cashi uses your location to attach optional coordinates to a transaction."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

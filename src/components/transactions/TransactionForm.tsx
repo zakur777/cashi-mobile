@@ -1,5 +1,8 @@
+
+import { Ionicons } from "@expo/vector-icons";
 import {
 	KeyboardAvoidingView,
+	Image,
 	Platform,
 	Pressable,
 	ScrollView,
@@ -19,7 +22,54 @@ import {
 	touchTarget,
 	typography,
 } from "../../design/tokens";
-import type { Category, TransactionType } from "../../domain/types";
+import type { Category, TransactionLocation, TransactionType } from "../../domain/types";
+
+interface MetadataActionProps {
+	icon: keyof typeof Ionicons.glyphMap;
+	label: string;
+	onPress: () => void;
+	disabled?: boolean;
+	variant?: "default" | "danger";
+}
+
+function MetadataAction({
+	icon,
+	label,
+	onPress,
+	disabled = false,
+	variant = "default",
+}: MetadataActionProps) {
+	const isDanger = variant === "danger";
+
+	return (
+		<Pressable
+			accessibilityRole="button"
+			accessibilityLabel={label}
+			disabled={disabled}
+			onPress={onPress}
+			style={({ pressed }) => [
+				styles.metadataAction,
+				isDanger ? styles.metadataActionDanger : undefined,
+				pressed && !disabled ? styles.metadataActionPressed : undefined,
+				disabled ? styles.metadataActionDisabled : undefined,
+			]}
+		>
+			<Ionicons
+				name={icon}
+				size={16}
+				color={isDanger ? colors.danger : colors.lime}
+			/>
+			<Text
+				style={[
+					styles.metadataActionText,
+					isDanger ? styles.metadataActionTextDanger : undefined,
+				]}
+			>
+				{label}
+			</Text>
+		</Pressable>
+	);
+}
 
 interface TransactionFormProps {
 	title: string;
@@ -37,6 +87,11 @@ interface TransactionFormProps {
 		categoryId?: string;
 	};
 	formError?: string | null;
+	photoUri?: string;
+	photoError?: string | null;
+	location?: TransactionLocation;
+	locationError?: string | null;
+	metadataLoading?: boolean;
 	loading: boolean;
 	saveLabel: string;
 	onChangeAmount: (value: string) => void;
@@ -44,6 +99,11 @@ interface TransactionFormProps {
 	onChangeDescription: (value: string) => void;
 	onChangeDate: (value: string) => void;
 	onChangeCategoryId: (value: string) => void;
+	onCapturePhoto: () => void;
+	onSelectPhoto: () => void;
+	onClearPhoto: () => void;
+	onCaptureLocation: () => void;
+	onClearLocation: () => void;
 	onCancel: () => void;
 	onSave: () => void;
 	onDelete?: () => void;
@@ -60,6 +120,11 @@ export function TransactionForm(props: TransactionFormProps) {
 		categories,
 		errors,
 		formError,
+		photoUri,
+		photoError,
+		location,
+		locationError,
+		metadataLoading = false,
 		loading,
 		saveLabel,
 		onChangeAmount,
@@ -67,6 +132,11 @@ export function TransactionForm(props: TransactionFormProps) {
 		onChangeDescription,
 		onChangeDate,
 		onChangeCategoryId,
+		onCapturePhoto,
+		onSelectPhoto,
+		onClearPhoto,
+		onCaptureLocation,
+		onClearLocation,
 		onCancel,
 		onSave,
 		onDelete,
@@ -222,6 +292,89 @@ export function TransactionForm(props: TransactionFormProps) {
 					{errors.categoryId ? (
 						<Text style={styles.error}>{errors.categoryId}</Text>
 					) : null}
+				</View>
+
+				<View style={styles.metadataCard}>
+					<View style={styles.metadataHeader}>
+						<View style={styles.metadataIconBadge}>
+							<Ionicons name="receipt-outline" size={18} color={colors.lime} />
+						</View>
+						<View style={styles.metadataHeaderCopy}>
+							<Text style={styles.label}>Comprobante</Text>
+							<Text style={styles.metadataHelp}>
+								Adjuntá una foto local del ticket o boleta. No se envía al backend.
+							</Text>
+						</View>
+					</View>
+					<View style={styles.metadataButtonRow}>
+						<MetadataAction
+							icon="camera-outline"
+							label="Tomar foto"
+							onPress={onCapturePhoto}
+							disabled={metadataLoading}
+						/>
+						<MetadataAction
+							icon="images-outline"
+							label="Elegir foto"
+							onPress={onSelectPhoto}
+							disabled={metadataLoading}
+						/>
+					</View>
+					{photoUri ? (
+						<View style={styles.previewCard}>
+							<Image
+								source={{ uri: photoUri }}
+								style={styles.receiptPreview}
+								accessibilityLabel="Vista previa del comprobante"
+							/>
+							<MetadataAction
+								icon="trash-outline"
+								label="Quitar foto"
+								onPress={onClearPhoto}
+								variant="danger"
+							/>
+						</View>
+					) : null}
+					{photoError ? <Text style={styles.error}>{photoError}</Text> : null}
+				</View>
+
+				<View style={styles.metadataCard}>
+					<View style={styles.metadataHeader}>
+						<View style={styles.metadataIconBadge}>
+							<Ionicons name="location-outline" size={18} color={colors.lime} />
+						</View>
+						<View style={styles.metadataHeaderCopy}>
+							<Text style={styles.label}>Ubicación</Text>
+							<Text style={styles.metadataHelp}>
+								Guardá coordenadas locales para recordar dónde hiciste el movimiento.
+							</Text>
+						</View>
+					</View>
+					<View style={styles.metadataButtonRow}>
+						<MetadataAction
+							icon="navigate-outline"
+							label="Usar ubicación actual"
+							onPress={onCaptureLocation}
+							disabled={metadataLoading}
+						/>
+						{location ? (
+							<MetadataAction
+								icon="close-circle-outline"
+								label="Quitar ubicación"
+								onPress={onClearLocation}
+								variant="danger"
+							/>
+						) : null}
+					</View>
+					{location ? (
+						<View style={styles.locationPill}>
+							<Ionicons name="pin-outline" size={14} color={colors.lime} />
+							<Text style={styles.metadataText}>
+								Lat: {location.latitude}, Lon: {location.longitude}
+							</Text>
+						</View>
+					) : null}
+					{locationError ? <Text style={styles.error}>{locationError}</Text> : null}
 				</View>
 
 				{formError ? <Text style={styles.error}>{formError}</Text> : null}
@@ -384,6 +537,93 @@ const styles = StyleSheet.create({
 	categoryChipActive: { backgroundColor: colors.surfaceSoft, borderWidth: 2 },
 	categoryDot: { width: 10, height: 10, borderRadius: 5 },
 	categoryChipText: {
+		color: colors.textPrimary,
+		fontFamily: typography.bodyBold,
+		fontSize: 13,
+		fontWeight: "800",
+	},
+	metadataCard: {
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.lg,
+		padding: spacing.md,
+		gap: spacing.sm,
+		backgroundColor: colors.surfaceCard,
+	},
+	metadataHeader: {
+		flexDirection: "row",
+		alignItems: "flex-start",
+		gap: spacing.sm,
+	},
+	metadataIconBadge: {
+		width: componentSizes.listIcon,
+		height: componentSizes.listIcon,
+		borderRadius: radius.md,
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: colors.surfaceStrong,
+		borderWidth: 1,
+		borderColor: colors.borderStrong,
+	},
+	metadataHeaderCopy: { flex: 1, gap: 4 },
+	metadataHelp: {
+		color: colors.textSecondary,
+		fontFamily: typography.body,
+		fontSize: 13,
+		lineHeight: 18,
+	},
+	metadataButtonRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
+	metadataAction: {
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.pill,
+		minHeight: touchTarget.minHeight,
+		paddingHorizontal: spacing.sm,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: spacing.xs,
+		backgroundColor: colors.surfaceSoft,
+	},
+	metadataActionDanger: {
+		borderColor: colors.danger,
+		backgroundColor: colors.dangerSoft,
+	},
+	metadataActionPressed: { opacity: 0.78 },
+	metadataActionDisabled: { opacity: 0.5 },
+	metadataActionText: {
+		color: colors.textPrimary,
+		fontFamily: typography.bodyBold,
+		fontWeight: "800",
+	},
+	metadataActionTextDanger: { color: colors.danger },
+	previewCard: {
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.md,
+		padding: spacing.xs,
+		gap: spacing.xs,
+		backgroundColor: colors.surfaceSoft,
+	},
+	receiptPreview: {
+		width: "100%",
+		height: 180,
+		borderRadius: radius.sm,
+		backgroundColor: colors.surfaceCard,
+	},
+	locationPill: {
+		borderWidth: 1,
+		borderColor: colors.borderStrong,
+		borderRadius: radius.pill,
+		paddingHorizontal: spacing.sm,
+		minHeight: 36,
+		flexDirection: "row",
+		alignItems: "center",
+		alignSelf: "flex-start",
+		gap: spacing.xs,
+		backgroundColor: colors.surfaceStrong,
+	},
+	metadataText: {
 		color: colors.textPrimary,
 		fontFamily: typography.bodyBold,
 		fontSize: 13,

@@ -7,6 +7,8 @@ import { TransactionForm } from "../../../src/components/transactions/Transactio
 import { AppBackground } from "../../../src/components/ui/AppBackground";
 import { useCategories } from "../../../src/hooks/useCategories";
 import { useTransactionForm } from "../../../src/hooks/useTransactionForm";
+import { useImagePicker } from "../../../src/hooks/useImagePicker";
+import { useLocation } from "../../../src/hooks/useLocation";
 import { useTransactions } from "../../../src/hooks/useTransactions";
 
 const today = new Date().toISOString().slice(0, 10);
@@ -15,8 +17,11 @@ export default function TransactionDetailScreen() {
 	const router = useRouter();
 	const { id } = useLocalSearchParams<{ id: string }>();
 
-	const { categories, error: categoryError, refresh: refreshCategories } =
-		useCategories();
+	const {
+		categories,
+		error: categoryError,
+		refresh: refreshCategories,
+	} = useCategories();
 	const {
 		transactions,
 		error: transactionError,
@@ -38,6 +43,8 @@ export default function TransactionDetailScreen() {
 		() => transactions.find((transaction) => transaction.id === id),
 		[transactions, id],
 	);
+	const imagePicker = useImagePicker({ initialPhotoUri: current?.photoUri });
+	const locationPicker = useLocation({ initialLocation: current?.location });
 
 	const {
 		amount,
@@ -61,6 +68,10 @@ export default function TransactionDetailScreen() {
 			description: "",
 			date: today,
 			categoryId: "",
+		},
+		metadata: {
+			...(imagePicker.photoUri ? { photoUri: imagePicker.photoUri } : {}),
+			...(locationPicker.location ? { location: locationPicker.location } : {}),
 		},
 		onSubmit: async (validValues) => {
 			if (isNew) {
@@ -103,6 +114,11 @@ export default function TransactionDetailScreen() {
 					categories={categories}
 					errors={errors}
 					formError={formError ?? transactionError ?? categoryError}
+					photoUri={imagePicker.photoUri}
+					photoError={imagePicker.error}
+					location={locationPicker.location}
+					locationError={locationPicker.error}
+					metadataLoading={imagePicker.loading || locationPicker.loading}
 					loading={submitting}
 					saveLabel={isNew ? "Crear transacción" : "Guardar cambios"}
 					onChangeAmount={setAmount}
@@ -110,6 +126,17 @@ export default function TransactionDetailScreen() {
 					onChangeDescription={setDescription}
 					onChangeDate={setDate}
 					onChangeCategoryId={setCategoryId}
+					onCapturePhoto={() => {
+						void imagePicker.capturePhoto();
+					}}
+					onSelectPhoto={() => {
+						void imagePicker.selectPhoto();
+					}}
+					onClearPhoto={imagePicker.clearPhoto}
+					onCaptureLocation={() => {
+						void locationPicker.captureLocation();
+					}}
+					onClearLocation={locationPicker.clearLocation}
 					onCancel={() => router.back()}
 					onSave={() => {
 						void handleSubmit();
