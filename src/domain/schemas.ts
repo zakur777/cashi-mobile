@@ -16,6 +16,11 @@ export const transactionSchema = z.object({
   description: z.string().trim().min(1, 'La descripción es obligatoria'),
   date: z.string().trim().min(1, 'La fecha es obligatoria'),
   categoryId: z.string().trim().min(1, 'La categoría es obligatoria'),
+  photoUri: z.string().trim().min(1).optional(),
+  location: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+  }).optional(),
 });
 
 export const loginSchema = z.object({

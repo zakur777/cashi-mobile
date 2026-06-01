@@ -1,6 +1,7 @@
 import type {
 	Category,
 	CategoryInput,
+	TransactionMetadataInput,
 	Transaction,
 	TransactionType,
 } from "../domain/types";
@@ -14,7 +15,7 @@ export interface CategoryRepository {
 	delete(id: string): Promise<void>;
 }
 
-export interface TransactionInput {
+export interface TransactionInput extends TransactionMetadataInput {
 	amount: number;
 	type: TransactionType;
 	description: string;

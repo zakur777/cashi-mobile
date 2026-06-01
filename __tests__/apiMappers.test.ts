@@ -62,6 +62,29 @@ describe('API mappers', () => {
     expect(mapTransactionDomainToUpdateDto({ description: '   ', categoryId: '5' })).toEqual({ categoryId: 5 });
   });
 
+  it('omits local-only metadata from transaction create and update DTOs', () => {
+    expect(
+      mapTransactionDomainToCreateDto({
+        amount: 9000,
+        type: 'expense',
+        description: '  Café  ',
+        date: '2026-05-18',
+        categoryId: '4',
+        photoUri: 'file:///receipt.jpg',
+        location: { latitude: -33.44, longitude: -70.65 },
+      }),
+    ).toEqual({ amount: 9000, type: 'expense', description: 'Café', date: '2026-05-18', categoryId: 4 });
+
+    expect(
+      mapTransactionDomainToUpdateDto({
+        description: 'Metro',
+        categoryId: '5',
+        photoUri: 'file:///metro.jpg',
+        location: { latitude: -33.45, longitude: -70.66 },
+      }),
+    ).toEqual({ description: 'Metro', categoryId: 5 });
+  });
+
   it('rejects invalid outbound ids with a typed error', () => {
     expect(() => mapMobileIdToBackendId('abc')).toThrow(ApiClientError);
     expect(() => mapTransactionDomainToCreateDto({ amount: 1, type: 'income', description: '', date: '2026-05-18', categoryId: '-1' })).toThrow(ApiClientError);

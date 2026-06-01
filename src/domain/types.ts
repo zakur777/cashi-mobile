@@ -31,7 +31,17 @@ export interface CategoryInput {
 	color: CategoryColor;
 }
 
-export interface Transaction {
+export interface TransactionLocation {
+	latitude: number;
+	longitude: number;
+}
+
+export interface TransactionMetadataInput {
+	photoUri?: string;
+	location?: TransactionLocation;
+}
+
+export interface Transaction extends TransactionMetadataInput {
 	id: string;
 	amount: number;
 	type: TransactionType;

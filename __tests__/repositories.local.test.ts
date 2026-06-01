@@ -181,4 +181,58 @@ describe("local repositories", () => {
 		await localTransactionRepository.delete("tx-1");
 		expect(mockedTransactionsStorage.saveAll).toHaveBeenLastCalledWith([]);
 	});
+
+	it("creates and updates local transactions with optional metadata", async () => {
+		const existing: Transaction = {
+			id: "tx-1",
+			amount: 1200,
+			type: "expense",
+			description: "Taxi",
+			date: "2026-05-18",
+			categoryId: "cat-1",
+		};
+		mockedTransactionsStorage.getAll
+			.mockResolvedValueOnce([existing])
+			.mockResolvedValueOnce([existing]);
+		mockedTransactionsStorage.saveAll.mockResolvedValue();
+
+		const created = await localTransactionRepository.create({
+			amount: 5000,
+			type: "expense",
+			description: "Super",
+			date: "2026-05-21",
+			categoryId: "cat-2",
+			photoUri: "file:///receipt-super.jpg",
+			location: { latitude: -33.44, longitude: -70.65 },
+		});
+		expect(created).toMatchObject({
+			photoUri: "file:///receipt-super.jpg",
+			location: { latitude: -33.44, longitude: -70.65 },
+		});
+		expect(mockedTransactionsStorage.saveAll).toHaveBeenLastCalledWith([
+			existing,
+			created,
+		]);
+
+		const updated = await localTransactionRepository.update("tx-1", {
+			amount: 1300,
+			type: "expense",
+			description: "Taxi editado",
+			date: "2026-05-22",
+			categoryId: "cat-1",
+			photoUri: "file:///receipt-taxi.jpg",
+		});
+		expect(updated).toEqual({
+			id: "tx-1",
+			amount: 1300,
+			type: "expense",
+			description: "Taxi editado",
+			date: "2026-05-22",
+			categoryId: "cat-1",
+			photoUri: "file:///receipt-taxi.jpg",
+		});
+		expect(mockedTransactionsStorage.saveAll).toHaveBeenLastCalledWith([
+			updated,
+		]);
+	});
 });

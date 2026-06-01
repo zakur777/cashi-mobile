@@ -77,26 +77,28 @@ export function mapTransactionDtoToDomain(dto: BackendTransactionDto): Transacti
 }
 
 export function mapTransactionDomainToCreateDto(input: Omit<Transaction, 'id'>): CreateTransactionRequestDto {
+  const { photoUri: _photoUri, location: _location, ...backendInput } = input;
   const description = input.description.trim();
 
   return {
-    amount: input.amount,
-    type: input.type,
+    amount: backendInput.amount,
+    type: backendInput.type,
     ...(description ? { description } : {}),
-    date: input.date,
-    categoryId: mapMobileIdToBackendId(input.categoryId),
+    date: backendInput.date,
+    categoryId: mapMobileIdToBackendId(backendInput.categoryId),
   };
 }
 
 export function mapTransactionDomainToUpdateDto(input: Partial<Omit<Transaction, 'id'>>): UpdateTransactionRequestDto {
-  const description = input.description?.trim();
+  const { photoUri: _photoUri, location: _location, ...backendInput } = input;
+  const description = backendInput.description?.trim();
 
   return {
-    ...(input.amount !== undefined ? { amount: input.amount } : {}),
-    ...(input.type !== undefined ? { type: input.type } : {}),
+    ...(backendInput.amount !== undefined ? { amount: backendInput.amount } : {}),
+    ...(backendInput.type !== undefined ? { type: backendInput.type } : {}),
     ...(description ? { description } : {}),
-    ...(input.date !== undefined ? { date: input.date } : {}),
-    ...(input.categoryId !== undefined ? { categoryId: mapMobileIdToBackendId(input.categoryId) } : {}),
+    ...(backendInput.date !== undefined ? { date: backendInput.date } : {}),
+    ...(backendInput.categoryId !== undefined ? { categoryId: mapMobileIdToBackendId(backendInput.categoryId) } : {}),
   };
 }
 

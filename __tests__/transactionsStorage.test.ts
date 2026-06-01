@@ -70,4 +70,46 @@ describe('transactionsStorage', () => {
       JSON.stringify(payload),
     );
   });
+
+  it('returns stored transactions with optional metadata intact', async () => {
+    const stored: Transaction[] = [
+      {
+        id: 'tx-photo',
+        amount: 4500,
+        type: 'expense',
+        description: 'Farmacia',
+        date: '2026-05-21',
+        categoryId: 'cat-health',
+        photoUri: 'file:///receipt-farmacia.jpg',
+        location: { latitude: -33.45, longitude: -70.66 },
+      },
+    ];
+    mockedAsyncStorage.getItem.mockResolvedValueOnce(JSON.stringify(stored));
+
+    const result = await transactionsStorage.getAll();
+
+    expect(result).toEqual(stored);
+    expect(result[0].photoUri).toBe('file:///receipt-farmacia.jpg');
+    expect(result[0].location).toEqual({ latitude: -33.45, longitude: -70.66 });
+  });
+
+  it('returns legacy transactions without requiring metadata', async () => {
+    const stored: Transaction[] = [
+      {
+        id: 'tx-legacy',
+        amount: 900,
+        type: 'expense',
+        description: 'Metro',
+        date: '2026-05-20',
+        categoryId: 'cat-transport',
+      },
+    ];
+    mockedAsyncStorage.getItem.mockResolvedValueOnce(JSON.stringify(stored));
+
+    const result = await transactionsStorage.getAll();
+
+    expect(result).toEqual(stored);
+    expect(result[0].photoUri).toBeUndefined();
+    expect(result[0].location).toBeUndefined();
+  });
 });

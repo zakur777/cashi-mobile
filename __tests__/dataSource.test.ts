@@ -29,6 +29,12 @@ describe("data source resolver", () => {
 		expect(resolveCashiDataSource()).toBe("local");
 	});
 
+	it("defaults to local so requirement metadata is handled without backend configuration", () => {
+		delete process.env.EXPO_PUBLIC_CASHI_DATA_SOURCE;
+
+		expect(resolveCashiDataSource()).toBe("local");
+	});
+
 	it("reads expo extra when environment is absent", () => {
 		delete process.env.EXPO_PUBLIC_CASHI_DATA_SOURCE;
 

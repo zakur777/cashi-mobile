@@ -163,6 +163,60 @@ describe("backend repositories", () => {
 		expect(client.deleteTransaction).toHaveBeenCalledWith(8);
 	});
 
+	it("keeps backend transaction payloads metadata-free when local metadata is present", async () => {
+		const client = createMockClient();
+		const repository = createBackendTransactionRepository(client);
+		const dto = {
+			id: 10,
+			amount: 2200,
+			type: "expense" as const,
+			description: "Almuerzo",
+			date: "2026-05-21",
+			categoryId: 3,
+			category: {
+				id: 3,
+				name: "Comida",
+				type: "expense" as const,
+				color: CATEGORY_COLORS.lime,
+			},
+		};
+		client.createTransaction.mockResolvedValueOnce(dto);
+		client.updateTransaction.mockResolvedValueOnce(dto);
+
+		await repository.create({
+			amount: 2200,
+			type: "expense",
+			description: "Almuerzo",
+			date: "2026-05-21",
+			categoryId: "3",
+			photoUri: "file:///lunch.jpg",
+			location: { latitude: -33.44, longitude: -70.65 },
+		});
+		expect(client.createTransaction).toHaveBeenCalledWith({
+			amount: 2200,
+			type: "expense",
+			description: "Almuerzo",
+			date: "2026-05-21",
+			categoryId: 3,
+		});
+
+		await repository.update("10", {
+			amount: 2300,
+			type: "expense",
+			description: "Almuerzo editado",
+			date: "2026-05-22",
+			categoryId: "3",
+			photoUri: "file:///lunch-edited.jpg",
+		});
+		expect(client.updateTransaction).toHaveBeenCalledWith(10, {
+			amount: 2300,
+			type: "expense",
+			description: "Almuerzo editado",
+			date: "2026-05-22",
+			categoryId: 3,
+		});
+	});
+
 	it("rejects invalid mobile ids before calling the backend and preserves API errors", async () => {
 		const client = createMockClient();
 		const repository = createBackendTransactionRepository(client);
