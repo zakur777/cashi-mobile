@@ -11,6 +11,7 @@ La app está optimizada para validación **Android-first** con Expo Go/emulador.
 - Categorías con `type` (`income | expense`) y color fijo de la paleta Cashi.
 - CRUD completo de transacciones.
 - Selección de categoría al crear/editar transacciones.
+- Adjuntos locales en transacciones: foto de comprobante y coordenadas GPS opcionales.
 - Balance con total de ingresos, total de egresos, saldo final y **Categoría principal**.
 - Montos en pesos chilenos CLP: `$1.250.000`, sin decimales y con punto de miles.
 - Persistencia local con AsyncStorage por defecto.
@@ -51,6 +52,14 @@ Luego podés abrirla con Expo Go o con el emulador desde la terminal de Expo.
 
 ```bash
 npx expo start --clear --android
+```
+
+Si Expo Go queda cargando o abre una versión anterior, reiniciá la conexión local:
+
+```bash
+adb shell am force-stop host.exp.exponent
+adb reverse tcp:8081 tcp:8081
+adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081"
 ```
 
 Credenciales demo:
@@ -114,6 +123,37 @@ Password: Cashi1234
 
 Si las tablas del backend están recién migradas, es normal ver categorías, movimientos y balance vacíos hasta crear datos desde la app.
 
+## Requerimiento 3: entrega local con foto y ubicación
+
+El Requerimiento 3 agrega metadata **local-first** a las transacciones sin romper la integración con backend.
+
+### Qué probar
+
+1. Entrar a `Movimientos`.
+2. Tocar `+` para crear una transacción, o tocar una transacción existente para editarla.
+3. En `Comprobante`, usar `Tomar foto` o `Elegir foto`.
+4. En `Ubicación`, usar `Usar ubicación actual`.
+5. Guardar la transacción.
+
+Resultado esperado:
+
+- la foto se muestra como preview antes de guardar;
+- la ubicación se muestra como `Lat: ..., Lon: ...`;
+- ambos campos son opcionales;
+- si se usa backend, `photoUri` y `location` no se envían al API.
+
+> En emulador, la cámara es simulada. Es normal que `Tomar foto` muestre una escena artificial del emulador en vez de una foto real. En un dispositivo físico se usa la cámara real.
+
+### Diseño técnico
+
+| Área | Decisión |
+| ---- | -------- |
+| Metadata | `photoUri` y `location` viven como campos opcionales de `Transaction`. |
+| Persistencia local | AsyncStorage conserva la metadata en transacciones locales. |
+| Backend | Los mappers omiten metadata local antes de crear/actualizar DTOs HTTP. |
+| UI | La pantalla coordina hooks de dispositivo; `TransactionForm` sigue siendo presentacional. |
+| Ubicación | Se intenta proveedor de red Android, `getLastKnownPositionAsync` y luego `getCurrentPositionAsync`. |
+
 ### Mensajes de error de backend
 
 El front traduce errores técnicos a mensajes amigables. Ejemplos:
@@ -166,6 +206,72 @@ emulator -avd Pixel_6
 ```
 
 > Nota: `npm star` no inicia la app. El comando correcto es `npm start` o `npx expo start --clear --android`.
+
+## Problema conocido: ubicación del emulador no entrega coordenadas
+
+Que Android tenga `Location` activado no significa que exista una ubicación disponible. Si la app muestra:
+
+```txt
+No pudimos obtener tu ubicación actual. Activá la ubicación del emulador o intentá de nuevo.
+```
+
+diagnosticá primero si el emulador tiene un fix real:
+
+```bash
+adb shell settings get secure location_mode
+adb shell dumpsys location | findstr /i "last location gps network fused"
+```
+
+`location_mode = 3` indica que Location está activo. Pero si `dumpsys location` muestra:
+
+```txt
+last location=null
+locations = 0
+```
+
+Android no recibió coordenadas todavía.
+
+### Enviar coordenadas al emulador
+
+Desde Extended Controls del emulador:
+
+1. `...` → `Location`.
+2. Buscar o seleccionar Santiago.
+3. Click en `Set Location`.
+
+O por ADB:
+
+```bash
+adb emu geo fix -70.669265 -33.448890
+adb shell dumpsys location | findstr /i "last location gps network fused"
+```
+
+> En `adb emu geo fix`, el orden es longitud primero y latitud después.
+
+### Si el emulador tiene internet pero no resuelve DNS
+
+Si `last location` sigue en `null`, revisá conectividad:
+
+```bash
+adb shell ping -c 3 8.8.8.8
+adb shell ping -c 3 google.com
+```
+
+Si `8.8.8.8` responde pero `google.com` devuelve `unknown host`, el emulador tiene red pero DNS roto. Cerrá el emulador y arrancalo con DNS explícito:
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd "Pixel_7" -dns-server 8.8.8.8,8.8.4.4
+```
+
+Luego verificá:
+
+```bash
+adb shell ping -c 3 google.com
+adb emu geo fix -70.669265 -33.448890
+adb shell dumpsys location | findstr /i "last location gps network fused"
+```
+
+Si Google Maps o el navegador del emulador ya obtienen ubicación, la app debería poder mostrar la píldora `Lat/Lon` al tocar `Usar ubicación actual`.
 
 ## Ejecutar tests
 
@@ -240,6 +346,11 @@ interface Transaction {
   description: string;
   date: string;
   categoryId: string;
+  photoUri?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 ```
 
@@ -267,6 +378,7 @@ Los formularios usan Zod para validar:
 - descripción obligatoria;
 - tipo válido: ingreso o egreso;
 - categoría obligatoria.
+- metadata opcional: `photoUri` y `location` no hacen inválidas las transacciones legacy.
 
 Los errores se muestran en pantalla, cerca del campo correspondiente.
 
