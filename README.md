@@ -231,6 +231,32 @@ locations = 0
 
 Android no recibió coordenadas todavía.
 
+### Orden que sí funcionó para Expo Go
+
+En este proyecto la ubicación del emulador debe quedar configurada **antes** de abrir Cashi Mobile en Expo Go. Si se setea la ubicación con la app ya abierta, Expo Location puede seguir leyendo `last location=null`.
+
+Secuencia recomendada para grabar o validar:
+
+1. Cerrá Cashi Mobile / Expo Go en el emulador.
+2. Arrancá el emulador, idealmente con DNS explícito si venía fallando la red.
+3. Verificá que Android/Google Maps ya tenga ubicación.
+4. Seteá la ubicación desde Extended Controls o ADB.
+5. Recién después levantá Metro y abrí Cashi Mobile.
+
+```powershell
+& "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd "Pixel_7" -dns-server 8.8.8.8,8.8.4.4
+adb shell ping -c 3 google.com
+adb emu geo fix -70.669265 -33.448890
+adb reverse tcp:8081 tcp:8081
+npx expo start --clear
+```
+
+Luego abrí Expo Go e ingresá:
+
+```txt
+exp://127.0.0.1:8081
+```
+
 ### Enviar coordenadas al emulador
 
 Desde Extended Controls del emulador:
@@ -271,7 +297,7 @@ adb emu geo fix -70.669265 -33.448890
 adb shell dumpsys location | findstr /i "last location gps network fused"
 ```
 
-Si Google Maps o el navegador del emulador ya obtienen ubicación, la app debería poder mostrar la píldora `Lat/Lon` al tocar `Usar ubicación actual`.
+Si Google Maps o el navegador del emulador ya obtienen ubicación **antes de abrir Cashi Mobile**, la app debería poder mostrar la píldora `Lat/Lon` al tocar `Usar ubicación actual`.
 
 ## Ejecutar tests
 
