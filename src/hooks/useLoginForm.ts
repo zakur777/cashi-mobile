@@ -1,17 +1,16 @@
 import { useCallback, useState } from 'react';
 
+import { useOptionalAuth, type AuthCredentials } from '../contexts/AuthContext';
 import { loginSchema } from '../domain/schemas';
-
-const HARDCODED_CREDENTIALS = {
-  email: 'demo@cashi.com',
-  password: 'Cashi1234',
-} as const;
+import { getUserFacingErrorMessage } from '../api/userFacingErrors';
 
 interface UseLoginFormOptions {
   onSuccess: () => void;
+  login?: (input: AuthCredentials) => Promise<void>;
 }
 
-export function useLoginForm({ onSuccess }: UseLoginFormOptions) {
+export function useLoginForm({ onSuccess, login }: UseLoginFormOptions) {
+  const auth = useOptionalAuth();
   const [email, setEmailState] = useState('');
   const [password, setPasswordState] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -42,19 +41,24 @@ export function useLoginForm({ onSuccess }: UseLoginFormOptions) {
       return false;
     }
 
-    if (
-      parsed.data.email !== HARDCODED_CREDENTIALS.email ||
-      parsed.data.password !== HARDCODED_CREDENTIALS.password
-    ) {
-      setFormError('Credenciales incorrectas');
+    const loginAction = login ?? auth?.login;
+
+    if (!loginAction) {
+      setFormError('La autenticación no está disponible');
       return false;
     }
 
-    setErrors({});
-    setFormError(null);
-    onSuccess();
-    return true;
-  }, [email, onSuccess, password]);
+    try {
+      await loginAction(parsed.data);
+      setErrors({});
+      setFormError(null);
+      onSuccess();
+      return true;
+    } catch (cause) {
+      setFormError(getUserFacingErrorMessage(cause, cause instanceof Error ? cause.message : 'No se pudo iniciar sesión'));
+      return false;
+    }
+  }, [auth?.login, email, login, onSuccess, password]);
 
   return {
     email,

@@ -1,15 +1,17 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalanceSummary } from '../../src/components/balance/BalanceSummary';
 import { AppBackground } from '../../src/components/ui/AppBackground';
 import { colors, spacing } from '../../src/design/tokens';
 import { useCategories } from '../../src/hooks/useCategories';
+import { useAuth } from '../../src/hooks/useAuth';
 import { useTransactions } from '../../src/hooks/useTransactions';
 
 export default function BalanceTab() {
+  const auth = useAuth();
   const { categories, refresh: refreshCategories } = useCategories();
   const {
     transactions,
@@ -32,6 +34,18 @@ export default function BalanceTab() {
   return (
     <AppBackground>
       <SafeAreaView style={styles.container}>
+        <View style={styles.headerRow}>
+          <Text style={styles.text}>Balance</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              void auth.logout();
+            }}
+            style={styles.logoutButton}
+          >
+            <Text style={styles.logoutText}>Cerrar sesión</Text>
+          </Pressable>
+        </View>
         {loading ? <Text style={styles.text}>Cargando balance...</Text> : null}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -53,7 +67,16 @@ export default function BalanceTab() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'transparent' },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+  },
   text: { fontSize: 16, color: colors.textPrimary, padding: spacing.md },
+  logoutButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+  logoutText: { color: colors.lime, fontSize: 13, fontWeight: '700' },
   errorText: { fontSize: 14, color: colors.danger, paddingHorizontal: spacing.md },
   emptyState: {
     fontSize: 14,

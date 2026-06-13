@@ -59,6 +59,32 @@ describe('useTransactionForm', () => {
     });
   });
 
+  it('blocks submit when selected category id is not in the loaded server categories', async () => {
+    const onSubmit = jest.fn().mockResolvedValue(undefined);
+    const { result } = renderHook(() =>
+      useTransactionForm({
+        onSubmit,
+        validCategoryIds: ['server-cat-1'],
+        initialValues: {
+          amount: '1300',
+          type: 'expense',
+          description: 'Taxi',
+          date: '2026-05-11',
+          categoryId: 'missing-cat',
+        },
+      }),
+    );
+
+    let ok = false;
+    await act(async () => {
+      ok = await result.current.handleSubmit();
+    });
+
+    expect(ok).toBe(false);
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(result.current.errors.categoryId).toBe('La categoría seleccionada no está disponible');
+  });
+
   it('clears amount error when amount changes', async () => {
     const { result } = renderHook(() =>
       useTransactionForm({

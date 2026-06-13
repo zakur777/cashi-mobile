@@ -1,4 +1,5 @@
 import {
+	type BalanceSummary,
 	CATEGORY_COLORS,
 	type Category,
 	type CategoryInput,
@@ -32,6 +33,19 @@ const buildTransaction = (input: TransactionInput): Transaction => ({
 	id: buildLocalId(),
 	...input,
 });
+
+function calculateLocalBalance(transactions: Transaction[]): BalanceSummary {
+	const totalIncome = transactions.reduce(
+		(acc, transaction) => transaction.type === "income" ? acc + transaction.amount : acc,
+		0,
+	);
+	const totalExpense = transactions.reduce(
+		(acc, transaction) => transaction.type === "expense" ? acc + transaction.amount : acc,
+		0,
+	);
+
+	return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
+}
 
 export const localCategoryRepository: CategoryRepository = {
 	async getAll() {
@@ -69,6 +83,11 @@ export const localTransactionRepository: TransactionRepository = {
 	async getAll() {
 		await seedDemoDataIfEmpty();
 		return transactionsStorage.getAll();
+	},
+
+	async getBalance() {
+		await seedDemoDataIfEmpty();
+		return calculateLocalBalance(await transactionsStorage.getAll());
 	},
 
 	async create(input) {

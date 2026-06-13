@@ -57,6 +57,40 @@ describe('Cashi API client', () => {
     });
   });
 
+  it('calls auth endpoints without bearer headers and returns JWT tokens', async () => {
+    const fetchImpl = jest
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(200, { token: 'login.jwt' }))
+      .mockResolvedValueOnce(jsonResponse(201, { token: 'register.jwt' }));
+    const client = createCashiApiClient({ baseUrl: 'https://api.cashi.test', fetchImpl, token: 'existing.jwt' });
+
+    await expect(client.login({ email: 'user@cashi.test', password: 'secret' })).resolves.toEqual({ token: 'login.jwt' });
+    await expect(client.register({ email: 'new@cashi.test', password: 'secret' })).resolves.toEqual({ token: 'register.jwt' });
+
+    expect(fetchImpl).toHaveBeenNthCalledWith(1, 'https://api.cashi.test/auth/login', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'user@cashi.test', password: 'secret' }),
+    });
+    expect(fetchImpl).toHaveBeenNthCalledWith(2, 'https://api.cashi.test/auth/register', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'new@cashi.test', password: 'secret' }),
+    });
+  });
+
+  it('adds bearer headers to protected requests', async () => {
+    const fetchImpl = jest.fn().mockResolvedValue(jsonResponse(200, []));
+    const client = createCashiApiClient({ baseUrl: 'https://api.cashi.test', fetchImpl, token: 'session.jwt' });
+
+    await client.getCategories();
+
+    expect(fetchImpl).toHaveBeenCalledWith('https://api.cashi.test/categories', {
+      method: 'GET',
+      headers: { Accept: 'application/json', Authorization: 'Bearer session.jwt' },
+    });
+  });
+
   it('constructs transaction CRUD and balance requests', async () => {
     const transaction = {
       id: 2,
@@ -91,6 +125,21 @@ describe('Cashi API client', () => {
     ]);
   });
 
+  it('uploads receipt images with bearer auth and no manual multipart content type', async () => {
+    const fetchImpl = jest.fn().mockResolvedValue(jsonResponse(200, { imageUrl: 'https://cdn.cashi.test/receipt.jpg' }));
+    const client = createCashiApiClient({ baseUrl: 'https://api.cashi.test', fetchImpl, token: 'session.jwt' });
+
+    await expect(client.uploadReceipt({ uri: 'file:///receipt.jpg', name: 'receipt.jpg', type: 'image/jpeg' })).resolves.toEqual({
+      imageUrl: 'https://cdn.cashi.test/receipt.jpg',
+    });
+
+    const [, init] = fetchImpl.mock.calls[0];
+    expect(fetchImpl.mock.calls[0][0]).toBe('https://api.cashi.test/transactions/upload');
+    expect(init.method).toBe('POST');
+    expect(init.headers).toEqual({ Accept: 'application/json', Authorization: 'Bearer session.jwt' });
+    expect(init.body).toBeInstanceOf(FormData);
+  });
+
   it.each([
     [400, 'bad_request'],
     [404, 'not_found'],
@@ -113,7 +162,7 @@ describe('Cashi API client', () => {
       fetchImpl: jest.fn().mockRejectedValue(new Error('offline')),
     });
 
-    await expect(networkClient.health()).rejects.toMatchObject({ error: { kind: 'network' } });
+    await expect(networkClient.health()).rejects.toMatchObject({ error: { kind: 'network', message: 'Error de conexión' } });
 
     const parseClient = createCashiApiClient({
       baseUrl: 'https://api.cashi.test',
@@ -122,5 +171,14 @@ describe('Cashi API client', () => {
 
     await expect(parseClient.health()).rejects.toBeInstanceOf(ApiClientError);
     await expect(parseClient.health()).rejects.toMatchObject({ error: { kind: 'parse' } });
+  });
+
+  it('uses body.error as the HTTP error message when present', async () => {
+    const fetchImpl = jest.fn().mockResolvedValue(jsonResponse(401, { error: 'Credenciales inválidas' }));
+    const client = createCashiApiClient({ baseUrl: 'https://api.cashi.test', fetchImpl });
+
+    await expect(client.login({ email: 'user@cashi.test', password: 'bad' })).rejects.toMatchObject({
+      error: { kind: 'http', status: 401, message: 'Credenciales inválidas' },
+    });
   });
 });

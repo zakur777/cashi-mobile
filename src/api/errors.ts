@@ -49,7 +49,7 @@ export function createConfigError(message: string, details?: unknown) {
 }
 
 export function createNetworkError(details?: unknown) {
-  return new ApiClientError({ kind: 'network', message: 'No se pudo conectar con el servidor', details });
+  return new ApiClientError({ kind: 'network', message: 'Error de conexión', details });
 }
 
 export function createParseError(details?: unknown) {
@@ -58,5 +58,15 @@ export function createParseError(details?: unknown) {
 
 export function createHttpError(status: number, details?: unknown) {
   const code = getHttpErrorCode(status);
-  return new ApiClientError({ kind: 'http', status, code, message: statusMessages[code], details });
+  const serverMessage = extractServerErrorMessage(details);
+  return new ApiClientError({ kind: 'http', status, code, message: serverMessage ?? statusMessages[code], details });
+}
+
+function extractServerErrorMessage(details: unknown): string | null {
+  if (typeof details !== 'object' || details === null || !('error' in details)) {
+    return null;
+  }
+
+  const error = details.error;
+  return typeof error === 'string' && error.trim() ? error : null;
 }

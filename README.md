@@ -1,12 +1,12 @@
 # Cashi Mobile
 
-**Cashi Mobile** es una app de finanzas personales creada con **React Native + Expo + TypeScript**. Permite iniciar sesión, gestionar categorías, registrar ingresos/egresos y consultar un balance financiero. Por defecto usa persistencia local con **AsyncStorage**, y también puede conectarse de forma opt-in al backend Cashi.
+**Cashi Mobile** es una app de finanzas personales creada con **React Native + Expo + TypeScript**. Permite iniciar sesión contra el backend Cashi, gestionar categorías, registrar ingresos/egresos y consultar un balance financiero servido por la API.
 
 La app está optimizada para validación **Android-first** con Expo Go/emulador.
 
 ## Funcionalidades
 
-- Login demo local.
+- Login con JWT mediante `POST /auth/login`.
 - CRUD completo de categorías.
 - Categorías con `type` (`income | expense`) y color fijo de la paleta Cashi.
 - CRUD completo de transacciones.
@@ -14,8 +14,8 @@ La app está optimizada para validación **Android-first** con Expo Go/emulador.
 - Adjuntos locales en transacciones: foto de comprobante y coordenadas GPS opcionales.
 - Balance con total de ingresos, total de egresos, saldo final y **Categoría principal**.
 - Montos en pesos chilenos CLP: `$1.250.000`, sin decimales y con punto de miles.
-- Persistencia local con AsyncStorage por defecto.
-- Integración opt-in con backend Cashi para categorías, transacciones y balance.
+- Persistencia segura del JWT con SecureStore.
+- Integración con el backend Cashi para categorías, transacciones, carga de comprobantes y balance.
 - Validación de formularios con Zod y errores por campo.
 - Navegación con Expo Router y tabs.
 - UI Android-first basada en referencia OpenDesign, con tokens, gradientes e Inter como tipografía disponible.
@@ -65,39 +65,29 @@ adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081"
 Credenciales demo:
 
 ```txt
-Email: demo@cashi.com
-Password: Cashi1234
+Email: <provisto externamente>
+Password: <provisto externamente>
 ```
 
-## Ejecutar contra el backend Cashi
+## Ejecutar contra el backend Cashi en Render
 
-La app mantiene modo local por defecto. Para usar el backend hay que iniciar Expo con variables públicas de entorno.
-
-Backend esperado para emulador Android:
+La app usa `EXPO_PUBLIC_API_URL` como URL pública del backend. El valor de Render para validación es:
 
 ```txt
-http://127.0.0.1:3000
-```
-
-Usamos `127.0.0.1` porque se recomienda abrir un reverse del puerto 3000 con ADB:
-
-```bash
-adb reverse tcp:3000 tcp:3000
+https://cashi-api-pphe.onrender.com
 ```
 
 ### CMD de Windows
 
 ```bat
-set EXPO_PUBLIC_CASHI_DATA_SOURCE=backend
-set EXPO_PUBLIC_CASHI_API_BASE_URL=http://127.0.0.1:3000
+set EXPO_PUBLIC_API_URL=https://cashi-api-pphe.onrender.com
 npx expo start --clear
 ```
 
 ### PowerShell
 
 ```powershell
-$env:EXPO_PUBLIC_CASHI_DATA_SOURCE="backend"
-$env:EXPO_PUBLIC_CASHI_API_BASE_URL="http://127.0.0.1:3000"
+$env:EXPO_PUBLIC_API_URL="https://cashi-api-pphe.onrender.com"
 npx expo start --clear
 ```
 
@@ -107,21 +97,30 @@ Con el emulador abierto:
 
 ```bash
 adb reverse tcp:8081 tcp:8081
-adb reverse tcp:3000 tcp:3000
 adb shell am force-stop host.exp.exponent
 adb shell am start -a android.intent.action.VIEW -d "exp://127.0.0.1:8081"
 ```
 
-Credenciales de login de la app:
+Credenciales demo para verificación manual:
 
 ```txt
-Email: demo@cashi.com
-Password: Cashi1234
+Email: <provisto externamente>
+Password: <provisto externamente>
 ```
 
-> El backend no tiene autenticación todavía. El login sigue siendo demo local; el backend se usa para categorías, transacciones y balance.
+> No commitees credenciales reales. La pantalla de login envía el correo y contraseña ingresados a `POST /auth/login`; el JWT se guarda con SecureStore y se envía como `Authorization: Bearer <token>` en categorías, transacciones, balance y upload.
 
-Si las tablas del backend están recién migradas, es normal ver categorías, movimientos y balance vacíos hasta crear datos desde la app.
+Si necesitás registrar un usuario y no hay pantalla de registro, usá el servicio tipado `client.register(...)` o las herramientas del backend acordadas por el equipo.
+
+### Verificación manual del backend Render
+
+1. Configurá `EXPO_PUBLIC_API_URL=https://cashi-api-pphe.onrender.com` y ejecutá `npx expo start --clear`.
+2. Ingresá con credenciales demo provistas por fuera del repositorio.
+3. Confirmá que el login navega a tabs y que categorías/transacciones cargan datos protegidos.
+4. Creá o editá una transacción con categoría válida; si adjuntás foto, el cliente debe subirla a `/transactions/upload` antes de guardar.
+5. Entrá al tab Balance y volvé a enfocarlo; debe refrescar `GET /transactions/balance`.
+6. Tocá `Cerrar sesión`; debe volver a mostrarse login y borrar la sesión.
+7. Repetí con red desconectada o backend caído para verificar `Error de conexión`/mensaje amigable.
 
 ## Requerimiento 3: entrega local con foto y ubicación
 
@@ -140,7 +139,7 @@ Resultado esperado:
 - la foto se muestra como preview antes de guardar;
 - la ubicación se muestra como `Lat: ..., Lon: ...`;
 - ambos campos son opcionales;
-- si se usa backend, `photoUri` y `location` no se envían al API.
+- si se usa backend, la foto se sube primero y se envía `imageUrl`; la ubicación se envía como coordenadas opcionales.
 
 > En emulador, la cámara es simulada. Es normal que `Tomar foto` muestre una escena artificial del emulador en vez de una foto real. En un dispositivo físico se usa la cámara real.
 
@@ -150,7 +149,7 @@ Resultado esperado:
 | ---- | -------- |
 | Metadata | `photoUri` y `location` viven como campos opcionales de `Transaction`. |
 | Persistencia local | AsyncStorage conserva la metadata en transacciones locales. |
-| Backend | Los mappers omiten metadata local antes de crear/actualizar DTOs HTTP. |
+| Backend | El repositorio sube el comprobante antes de guardar y los mappers envían `imageUrl`, `latitude` y `longitude` cuando existen. |
 | UI | La pantalla coordina hooks de dispositivo; `TransactionForm` sigue siendo presentacional. |
 | Ubicación | Se intenta proveedor de red Android, `getLastKnownPositionAsync` y luego `getCurrentPositionAsync`. |
 
@@ -391,7 +390,7 @@ Los datos se guardan localmente con una key por entidad:
 
 La app usa el patrón **read-modify-write** en modo local: leer datos actuales, modificar en memoria y guardar el arreglo completo nuevamente.
 
-En modo backend, `useCategories` y `useTransactions` resuelven repositorios HTTP mediante `EXPO_PUBLIC_CASHI_DATA_SOURCE=backend` y `EXPO_PUBLIC_CASHI_API_BASE_URL`.
+En modo backend autenticado, `useCategories` y `useTransactions` resuelven repositorios HTTP mediante el token de `AuthProvider` y `EXPO_PUBLIC_API_URL`.
 
 ## Validación
 

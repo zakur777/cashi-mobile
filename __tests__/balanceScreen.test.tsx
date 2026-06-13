@@ -17,6 +17,10 @@ jest.mock("../src/hooks/useTransactions", () => ({
 	useTransactions: () => mockUseTransactions(),
 }));
 
+jest.mock("../src/hooks/useAuth", () => ({
+	useAuth: () => ({ logout: jest.fn() }),
+}));
+
 describe("BalanceTab", () => {
 	beforeEach(() => {
 		mockRefresh.mockClear();

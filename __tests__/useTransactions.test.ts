@@ -247,6 +247,7 @@ describe("useTransactions", () => {
 			create: jest.fn(),
 			update: jest.fn(),
 			delete: jest.fn(),
+			getBalance: jest.fn().mockResolvedValue({ totalIncome: 3000, totalExpense: 900, balance: 2100 }),
 		};
 
 		const { result } = renderHook(() =>
@@ -258,9 +259,10 @@ describe("useTransactions", () => {
 		expect(result.current.transactionsWithCategory[1].categoryName).toBe(
 			"Comida",
 		);
-		expect(result.current.totalIncome).toBe(1000);
-		expect(result.current.totalExpense).toBe(250);
-		expect(result.current.balance).toBe(750);
+		expect(result.current.totalIncome).toBe(3000);
+		expect(result.current.totalExpense).toBe(900);
+		expect(result.current.balance).toBe(2100);
+		expect(repository.getBalance).toHaveBeenCalledTimes(1);
 		expect(mockedTransactionsStorage.getAll).not.toHaveBeenCalled();
 	});
 
@@ -283,6 +285,7 @@ describe("useTransactions", () => {
 			create: jest.fn().mockRejectedValue(new Error("create failed")),
 			update: jest.fn(),
 			delete: jest.fn().mockRejectedValue(new Error("delete failed")),
+			getBalance: jest.fn().mockResolvedValue({ totalIncome: 0, totalExpense: 0, balance: 0 }),
 		};
 
 		const { result } = renderHook(() =>

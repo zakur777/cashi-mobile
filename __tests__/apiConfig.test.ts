@@ -3,12 +3,18 @@ import { normalizeApiBaseUrl, requireApiBaseUrl, resolveApiBaseUrl } from '../sr
 
 describe('API config', () => {
   const originalEnv = process.env.EXPO_PUBLIC_CASHI_API_BASE_URL;
+  const originalPublicEnv = process.env.EXPO_PUBLIC_API_URL;
 
   afterEach(() => {
     if (originalEnv === undefined) {
       delete process.env.EXPO_PUBLIC_CASHI_API_BASE_URL;
     } else {
       process.env.EXPO_PUBLIC_CASHI_API_BASE_URL = originalEnv;
+    }
+    if (originalPublicEnv === undefined) {
+      delete process.env.EXPO_PUBLIC_API_URL;
+    } else {
+      process.env.EXPO_PUBLIC_API_URL = originalPublicEnv;
     }
   });
 
@@ -24,12 +30,22 @@ describe('API config', () => {
   });
 
   it('reads Expo public env when explicit input is absent', () => {
-    process.env.EXPO_PUBLIC_CASHI_API_BASE_URL = 'http://192.168.1.20:3000/';
+    process.env.EXPO_PUBLIC_API_URL = 'https://cashi-api-pphe.onrender.com/';
 
-    expect(resolveApiBaseUrl()).toBe('http://192.168.1.20:3000');
+    expect(resolveApiBaseUrl()).toBe('https://cashi-api-pphe.onrender.com');
+  });
+
+  it('prefers EXPO_PUBLIC_API_URL over the legacy Cashi env and exposes no demo credentials', () => {
+    process.env.EXPO_PUBLIC_API_URL = 'https://cashi-api-pphe.onrender.com/';
+    process.env.EXPO_PUBLIC_CASHI_API_BASE_URL = 'http://127.0.0.1:3000';
+
+    expect(resolveApiBaseUrl()).toBe('https://cashi-api-pphe.onrender.com');
+    expect(process.env.EXPO_PUBLIC_API_URL).not.toContain('demo@cashi.com');
+    expect(process.env.EXPO_PUBLIC_API_URL).not.toContain('Cashi1234');
   });
 
   it('throws typed config errors for missing or invalid URLs', () => {
+    delete process.env.EXPO_PUBLIC_API_URL;
     delete process.env.EXPO_PUBLIC_CASHI_API_BASE_URL;
 
     expect(() => requireApiBaseUrl({ baseUrl: '   ' })).toThrow(ApiClientError);

@@ -15,6 +15,7 @@ interface TransactionFormValues {
 interface UseTransactionFormOptions {
 	initialValues: TransactionFormValues;
 	metadata?: TransactionMetadataInput;
+	validCategoryIds?: string[];
 	onSubmit: (values: {
 		amount: number;
 		type: TransactionType;
@@ -37,6 +38,7 @@ interface TransactionFormErrors {
 export function useTransactionForm({
 	initialValues,
 	metadata,
+	validCategoryIds,
 	onSubmit,
 }: UseTransactionFormOptions) {
 	const [amount, setAmountValue] = useState(initialValues.amount);
@@ -103,6 +105,11 @@ export function useTransactionForm({
 			return false;
 		}
 
+		if (validCategoryIds && !validCategoryIds.includes(parsed.data.categoryId)) {
+			setErrors({ categoryId: "La categoría seleccionada no está disponible" });
+			return false;
+		}
+
 		setSubmitting(true);
 		try {
 			await onSubmit(parsed.data);
@@ -115,7 +122,7 @@ export function useTransactionForm({
 		} finally {
 			setSubmitting(false);
 		}
-	}, [amount, categoryId, date, description, metadata, onSubmit, type]);
+	}, [amount, categoryId, date, description, metadata, onSubmit, type, validCategoryIds]);
 
 	return {
 		amount,

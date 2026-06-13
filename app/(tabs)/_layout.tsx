@@ -1,9 +1,20 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 
 import { CashiTabBar } from '../../src/components/navigation/CashiTabBar';
 import { colors } from '../../src/design/tokens';
+import { useAuth } from '../../src/hooks/useAuth';
 
 export default function TabsLayout() {
+  const auth = useAuth();
+
+  if (auth.isInitializing) {
+    return null;
+  }
+
+  if (!auth.isAuthenticated) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <Tabs
       tabBar={(props) => <CashiTabBar {...props} />}

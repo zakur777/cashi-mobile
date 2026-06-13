@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { getUserFacingErrorMessage } from "../api/userFacingErrors";
+import { createDefaultCashiApiClient } from "../api/client";
+import { useOptionalAuth } from "../contexts/AuthContext";
 import type { Category, CategoryInput } from "../domain/types";
 import {
 	createBackendCategoryRepository,
@@ -22,17 +24,18 @@ export function useCategories({
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const auth = useOptionalAuth();
 
 	const getRepository = useCallback(() => {
 		if (repository) {
 			return repository;
 		}
 
-		const resolvedSource = resolveCashiDataSource({ dataSource });
+		const resolvedSource = auth?.token ? "backend" : resolveCashiDataSource({ dataSource });
 		return resolvedSource === "backend"
-			? createBackendCategoryRepository()
+			? createBackendCategoryRepository(createDefaultCashiApiClient(undefined, auth?.token))
 			: localCategoryRepository;
-	}, [dataSource, repository]);
+	}, [auth?.token, dataSource, repository]);
 
 	const refresh = useCallback(async () => {
 		setLoading(true);

@@ -19,6 +19,9 @@ const createMockClient = (): jest.Mocked<CashiApiClient> => ({
 	updateTransaction: jest.fn(),
 	deleteTransaction: jest.fn(),
 	getBalance: jest.fn(),
+	login: jest.fn(),
+	register: jest.fn(),
+	uploadReceipt: jest.fn(),
 });
 
 describe("backend repositories", () => {
@@ -163,7 +166,7 @@ describe("backend repositories", () => {
 		expect(client.deleteTransaction).toHaveBeenCalledWith(8);
 	});
 
-	it("keeps backend transaction payloads metadata-free when local metadata is present", async () => {
+	it("uploads selected receipt and sends returned image URL with coordinates", async () => {
 		const client = createMockClient();
 		const repository = createBackendTransactionRepository(client);
 		const dto = {
@@ -180,6 +183,12 @@ describe("backend repositories", () => {
 				color: CATEGORY_COLORS.lime,
 			},
 		};
+		client.uploadReceipt.mockResolvedValueOnce({
+			imageUrl: "https://cdn.cashi.test/lunch.jpg",
+		});
+		client.uploadReceipt.mockResolvedValueOnce({
+			imageUrl: "https://cdn.cashi.test/lunch-edited.jpg",
+		});
 		client.createTransaction.mockResolvedValueOnce(dto);
 		client.updateTransaction.mockResolvedValueOnce(dto);
 
@@ -192,12 +201,20 @@ describe("backend repositories", () => {
 			photoUri: "file:///lunch.jpg",
 			location: { latitude: -33.44, longitude: -70.65 },
 		});
+		expect(client.uploadReceipt).toHaveBeenCalledWith({
+			uri: "file:///lunch.jpg",
+			name: "receipt.jpg",
+			type: "image/jpeg",
+		});
 		expect(client.createTransaction).toHaveBeenCalledWith({
 			amount: 2200,
 			type: "expense",
 			description: "Almuerzo",
 			date: "2026-05-21",
 			categoryId: 3,
+			imageUrl: "https://cdn.cashi.test/lunch.jpg",
+			latitude: -33.44,
+			longitude: -70.65,
 		});
 
 		await repository.update("10", {
@@ -214,7 +231,17 @@ describe("backend repositories", () => {
 			description: "Almuerzo editado",
 			date: "2026-05-22",
 			categoryId: 3,
+			imageUrl: "https://cdn.cashi.test/lunch-edited.jpg",
 		});
+	});
+
+	it("retrieves server-owned balance through the transaction repository", async () => {
+		const client = createMockClient();
+		const repository = createBackendTransactionRepository(client);
+		client.getBalance.mockResolvedValueOnce({ totalIncome: 5000, totalExpense: 1250, balance: 3750 });
+
+		await expect(repository.getBalance()).resolves.toEqual({ totalIncome: 5000, totalExpense: 1250, balance: 3750 });
+		expect(client.getBalance).toHaveBeenCalledTimes(1);
 	});
 
 	it("rejects invalid mobile ids before calling the backend and preserves API errors", async () => {

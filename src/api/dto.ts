@@ -4,6 +4,15 @@ export interface HealthDto {
   status: 'ok';
 }
 
+export interface AuthRequestDto {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponseDto {
+  token: string;
+}
+
 export interface BackendCategoryDto {
   id: number;
   name: string;
@@ -27,6 +36,9 @@ export interface BackendTransactionDto {
   date: string;
   categoryId: number;
   category: BackendCategoryDto;
+  imageUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface CreateTransactionRequestDto {
@@ -35,6 +47,9 @@ export interface CreateTransactionRequestDto {
   description?: string;
   date: string;
   categoryId: number;
+  imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export type UpdateTransactionRequestDto = Partial<CreateTransactionRequestDto>;
@@ -43,6 +58,16 @@ export interface BackendBalanceDto {
   totalIncome: number;
   totalExpense: number;
   balance: number;
+}
+
+export interface ReceiptUploadFileDto {
+  uri: string;
+  name: string;
+  type: string;
+}
+
+export interface ReceiptUploadResponseDto {
+  imageUrl: string;
 }
 
 export interface BackendErrorDto {

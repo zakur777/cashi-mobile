@@ -73,11 +73,13 @@ export function mapTransactionDtoToDomain(dto: BackendTransactionDto): Transacti
     description: dto.description ?? '',
     date: dto.date,
     categoryId: String(dto.categoryId),
+    ...(dto.imageUrl ? { imageUrl: dto.imageUrl } : {}),
+    ...(dto.latitude != null && dto.longitude != null ? { location: { latitude: dto.latitude, longitude: dto.longitude } } : {}),
   };
 }
 
 export function mapTransactionDomainToCreateDto(input: Omit<Transaction, 'id'>): CreateTransactionRequestDto {
-  const { photoUri: _photoUri, location: _location, ...backendInput } = input;
+  const { photoUri: _photoUri, location, imageUrl, ...backendInput } = input;
   const description = input.description.trim();
 
   return {
@@ -86,11 +88,13 @@ export function mapTransactionDomainToCreateDto(input: Omit<Transaction, 'id'>):
     ...(description ? { description } : {}),
     date: backendInput.date,
     categoryId: mapMobileIdToBackendId(backendInput.categoryId),
+    ...(imageUrl ? { imageUrl } : {}),
+    ...(location ? { latitude: location.latitude, longitude: location.longitude } : {}),
   };
 }
 
 export function mapTransactionDomainToUpdateDto(input: Partial<Omit<Transaction, 'id'>>): UpdateTransactionRequestDto {
-  const { photoUri: _photoUri, location: _location, ...backendInput } = input;
+  const { photoUri: _photoUri, location, imageUrl, ...backendInput } = input;
   const description = backendInput.description?.trim();
 
   return {
@@ -99,6 +103,8 @@ export function mapTransactionDomainToUpdateDto(input: Partial<Omit<Transaction,
     ...(description ? { description } : {}),
     ...(backendInput.date !== undefined ? { date: backendInput.date } : {}),
     ...(backendInput.categoryId !== undefined ? { categoryId: mapMobileIdToBackendId(backendInput.categoryId) } : {}),
+    ...(imageUrl ? { imageUrl } : {}),
+    ...(location ? { latitude: location.latitude, longitude: location.longitude } : {}),
   };
 }
 

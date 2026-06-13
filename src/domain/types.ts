@@ -38,6 +38,7 @@ export interface TransactionLocation {
 
 export interface TransactionMetadataInput {
 	photoUri?: string;
+	imageUrl?: string;
 	location?: TransactionLocation;
 }
 

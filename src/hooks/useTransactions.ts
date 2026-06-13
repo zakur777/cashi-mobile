@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getUserFacingErrorMessage } from "../api/userFacingErrors";
+import { createDefaultCashiApiClient } from "../api/client";
+import { useOptionalAuth } from "../contexts/AuthContext";
 import {
 	CATEGORY_COLORS,
 	type Category,
+	type BalanceSummary,
 	type Transaction,
 } from "../domain/types";
 import {
@@ -21,31 +24,52 @@ interface UseTransactionsOptions {
 	dataSource?: CashiDataSource;
 }
 
+function calculateClientBalance(transactions: Transaction[]): BalanceSummary {
+	const totalIncome = transactions.reduce(
+		(acc, transaction) => transaction.type === "income" ? acc + transaction.amount : acc,
+		0,
+	);
+	const totalExpense = transactions.reduce(
+		(acc, transaction) => transaction.type === "expense" ? acc + transaction.amount : acc,
+		0,
+	);
+
+	return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
+}
+
 export function useTransactions({
 	categories = [],
 	repository,
 	dataSource,
 }: UseTransactionsOptions = {}) {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
+	const [serverBalance, setServerBalance] = useState({ totalIncome: 0, totalExpense: 0, balance: 0 });
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const auth = useOptionalAuth();
 
 	const getRepository = useCallback(() => {
 		if (repository) {
 			return repository;
 		}
 
-		const resolvedSource = resolveCashiDataSource({ dataSource });
+		const resolvedSource = auth?.token ? "backend" : resolveCashiDataSource({ dataSource });
 		return resolvedSource === "backend"
-			? createBackendTransactionRepository()
+			? createBackendTransactionRepository(createDefaultCashiApiClient(undefined, auth?.token))
 			: localTransactionRepository;
-	}, [dataSource, repository]);
+	}, [auth?.token, dataSource, repository]);
 
 	const refresh = useCallback(async () => {
 		setLoading(true);
 		try {
-			const items = await getRepository().getAll();
+			const activeRepository = getRepository();
+			const items = await activeRepository.getAll();
+			const shouldUseRepositoryBalance = repository !== undefined || auth?.token !== undefined || resolveCashiDataSource({ dataSource }) === "backend";
+			const balanceSummary = shouldUseRepositoryBalance
+				? await activeRepository.getBalance()
+				: calculateClientBalance(items);
 			setTransactions(items);
+			setServerBalance(balanceSummary);
 			setError(null);
 		} catch (cause) {
 			setError(
@@ -138,24 +162,8 @@ export function useTransactions({
 		[categories, transactions],
 	);
 
-	const { totalIncome, totalExpense, balance, primaryExpenseCategory } =
+	const { primaryExpenseCategory } =
 		useMemo(() => {
-			const income = transactions.reduce((acc, transaction) => {
-				if (transaction.type !== "income") {
-					return acc;
-				}
-
-				return acc + transaction.amount;
-			}, 0);
-
-			const expense = transactions.reduce((acc, transaction) => {
-				if (transaction.type !== "expense") {
-					return acc;
-				}
-
-				return acc + transaction.amount;
-			}, 0);
-
 			const expenseByCategory = transactions.reduce<Record<string, number>>(
 				(acc, transaction) => {
 					if (transaction.type !== "expense") {
@@ -176,9 +184,6 @@ export function useTransactions({
 			);
 
 			return {
-				totalIncome: income,
-				totalExpense: expense,
-				balance: income - expense,
 				primaryExpenseCategory:
 					primaryCategoryId && primaryAmount
 						? {
@@ -196,9 +201,9 @@ export function useTransactions({
 		transactionsWithCategory,
 		loading,
 		error,
-		totalIncome,
-		totalExpense,
-		balance,
+		totalIncome: serverBalance.totalIncome,
+		totalExpense: serverBalance.totalExpense,
+		balance: serverBalance.balance,
 		primaryExpenseCategory,
 		refresh,
 		createTransaction,

@@ -31,12 +31,12 @@ export function normalizeApiBaseUrl(baseUrl: string): string {
 
 function readExpoExtraBaseUrl(): string | null {
   const extra = Constants.expoConfig?.extra;
-  const value = extra?.cashiApiBaseUrl;
+  const value = extra?.apiUrl ?? extra?.cashiApiBaseUrl;
   return typeof value === 'string' ? value : null;
 }
 
 export function resolveApiBaseUrl(input: ApiConfigInput = {}): string | null {
-  const configured = input.baseUrl ?? process.env.EXPO_PUBLIC_CASHI_API_BASE_URL ?? readExpoExtraBaseUrl();
+  const configured = input.baseUrl ?? process.env.EXPO_PUBLIC_API_URL ?? process.env.EXPO_PUBLIC_CASHI_API_BASE_URL ?? readExpoExtraBaseUrl();
 
   if (configured == null) {
     return null;
@@ -49,7 +49,7 @@ export function requireApiBaseUrl(input: ApiConfigInput = {}): string {
   const baseUrl = resolveApiBaseUrl(input);
 
   if (!baseUrl) {
-    throw createConfigError('Configurá EXPO_PUBLIC_CASHI_API_BASE_URL para usar el backend');
+    throw createConfigError('Configurá EXPO_PUBLIC_API_URL para usar el backend');
   }
 
   return baseUrl;

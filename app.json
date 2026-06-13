@@ -35,7 +35,8 @@
         {
           "locationWhenInUsePermission": "Cashi uses your location to attach optional coordinates to a transaction."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

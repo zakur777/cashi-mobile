@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -20,9 +20,11 @@ import {
 	typography,
 } from "../src/design/tokens";
 import { useLoginForm } from "../src/hooks/useLoginForm";
+import { useAuth } from "../src/hooks/useAuth";
 
 export default function LoginScreen() {
 	const router = useRouter();
+	const auth = useAuth();
 	const {
 		email,
 		setEmail,
@@ -34,6 +36,14 @@ export default function LoginScreen() {
 	} = useLoginForm({
 		onSuccess: () => router.replace("/(tabs)/balance"),
 	});
+
+	if (auth.isInitializing) {
+		return null;
+	}
+
+	if (auth.isAuthenticated) {
+		return <Redirect href="/(tabs)/balance" />;
+	}
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -50,15 +60,14 @@ export default function LoginScreen() {
 							<Text style={styles.brandMarkText}>C</Text>
 						</GradientSurface>
 						<View style={styles.badge}>
-							<Text style={styles.badgeText}>Demo offline</Text>
+							<Text style={styles.badgeText}>Backend seguro</Text>
 						</View>
 					</View>
 
 					<Text style={styles.kicker}>Cashi Mobile</Text>
 					<Text style={styles.heroTitle}>Control financiero simple.</Text>
 					<Text style={styles.heroSubtitle}>
-						Acceso local, claro y seguro para revisar balance, categorías y
-						movimientos de la demo.
+						Acceso seguro para revisar balance, categorías y movimientos.
 					</Text>
 
 					<GradientSurface
@@ -82,7 +91,7 @@ export default function LoginScreen() {
 								autoCapitalize="none"
 								keyboardType="email-address"
 								accessibilityLabel="Email"
-								placeholder="demo@cashi.com"
+								placeholder="correo@ejemplo.com"
 								placeholderTextColor={colors.textMuted}
 								style={styles.input}
 							/>
@@ -124,7 +133,7 @@ export default function LoginScreen() {
 					</View>
 
 					<Text style={styles.footerNote}>
-						Demo local: tus datos viven solo en este dispositivo.
+						Usá las credenciales provistas externamente para validar el backend.
 					</Text>
 				</ScrollView>
 			</KeyboardAvoidingView>

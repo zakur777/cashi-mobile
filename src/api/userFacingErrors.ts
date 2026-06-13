@@ -24,6 +24,10 @@ export function getUserFacingErrorMessage(
 	}
 
 	if (error.error.kind === "http") {
+		if (error.message && !isDefaultHttpMessage(error.message)) {
+			return error.message;
+		}
+
 		if (error.error.code === "bad_request") {
 			return "Revisá los datos ingresados e intentá nuevamente.";
 		}
@@ -46,4 +50,15 @@ export function getUserFacingErrorMessage(
 	}
 
 	return fallback;
+}
+
+function isDefaultHttpMessage(message: string): boolean {
+	return [
+		"Solicitud inválida",
+		"Recurso no encontrado",
+		"El recurso ya existe o está en conflicto",
+		"No se pudo procesar la solicitud",
+		"El servidor no pudo completar la solicitud",
+		"No se pudo completar la solicitud",
+	].includes(message);
 }

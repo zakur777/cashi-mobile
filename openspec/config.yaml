@@ -1,48 +1,60 @@
+schema: spec-driven
 strict_tdd: true
 context: |
-  cashi-mobile is a Node.js/TypeScript, React project.
-  Detected markers: package.json, tsconfig.json, npm package manager.
-  Package managers: npm.
-  Additional evidence: Test-like files detected (14); examples: .pi\agents\sdd-spec.md, __tests__\CategoryList.test.tsx, __tests__\TransactionList.test.tsx, __tests__\balanceScreen.test.tsx, __tests__\categoriesStorage.test.ts.
-  Primary test command: npm test.
-  Unit tests: Jest (npm test).
-  Integration tests: none.
-  E2E tests: none.
+  Project: cashi-mobile, an Expo React Native app with Expo Router and TypeScript strict mode.
+  Stack: Expo ~55, React Native 0.83.6, React 19.2.0, Zod 4, AsyncStorage local persistence, optional backend data source.
+  Architecture: app routes render screens; hooks coordinate business logic; repositories/API/storage isolate persistence and transport.
+  Testing: Jest + jest-expo + Testing Library with 28 detected tests under __tests__; coverage via npm run test:coverage.
+  Quality: npm run typecheck is available; lint and formatter scripts are not declared.
+  SDD: OpenSpec artifacts are the source of truth; do not implement backend integration during init refresh.
+  Review: ask before chained PRs; target review budget is 400 changed lines.
 rules:
   proposal:
     require_problem_statement: true
   spec:
     require_acceptance_criteria: true
+    use_rfc_2119: true
+    use_given_when_then: true
   design:
     require_tradeoffs: true
+    require_rationale: true
   tasks:
     protect_review_workload: true
+    review_budget_changed_lines: 400
+    chained_pr_strategy: ask-always
   apply:
     test_command: "npm test"
+    tdd: true
+    follow_existing_patterns: true
   verify:
     test_command: "npm test"
+    build_command: "npm run typecheck"
 testing:
-  detected: "2026-05-17"
+  detected: "2026-06-12"
+  strict_tdd: true
   runner:
     command: "npm test"
-    framework: "Jest"
+    framework: "Jest + jest-expo"
   layers:
-    unit: "Jest"
-    integration: ""
+    unit: "Jest + jest-expo"
+    integration: "Testing Library component tests and repository/API boundary tests under Jest"
     e2e: ""
   commands:
     unit:
       - scope: "."
         command: "npm test"
-        framework: "Jest"
-    integration: []
+        framework: "Jest + jest-expo"
+    integration:
+      - scope: "."
+        command: "npm test"
+        framework: "@testing-library/react-native + Jest"
     e2e: []
   coverage:
     command: "npm run test:coverage"
     commands:
       - scope: "."
         command: "npm run test:coverage"
-        framework: "Jest"
+        framework: "Jest + jest-expo"
 quality:
   lint: ""
   lint_commands: []

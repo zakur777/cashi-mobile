@@ -69,6 +69,7 @@ export default function TransactionDetailScreen() {
 			date: today,
 			categoryId: "",
 		},
+		validCategoryIds: categories.map((category) => category.id),
 		metadata: {
 			...(imagePicker.photoUri ? { photoUri: imagePicker.photoUri } : {}),
 			...(locationPicker.location ? { location: locationPicker.location } : {}),
