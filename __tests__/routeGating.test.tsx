@@ -17,6 +17,7 @@ jest.mock("expo-router", () => {
 	const { Text, View } = require("react-native");
 
 	return {
+		router: { replace: mockReplace },
 		Redirect: ({ href }: { href: string }) =>
 			React.createElement(Text, null, `Redirect:${href}`),
 		Tabs: Object.assign(

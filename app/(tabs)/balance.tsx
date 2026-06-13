@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,6 +11,7 @@ import { useAuth } from '../../src/hooks/useAuth';
 import { useTransactions } from '../../src/hooks/useTransactions';
 
 export default function BalanceTab() {
+  const router = useRouter();
   const auth = useAuth();
   const { categories, refresh: refreshCategories } = useCategories();
   const {
@@ -39,7 +40,7 @@ export default function BalanceTab() {
           <Pressable
             accessibilityRole="button"
             onPress={() => {
-              void auth.logout();
+              void auth.logout().then(() => router.replace('/'));
             }}
             style={styles.logoutButton}
           >
